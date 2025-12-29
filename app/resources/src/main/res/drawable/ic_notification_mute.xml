@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="?attr/colorOnSurface"
+        android:pathData="M7,9v6h4l5,5v-16l-5,5h-4z" />
+
+    <path
+        android:fillColor="?attr/colorOnSurface"
+        android:pathData="M16.5,12c0,-1.77 -1.02,-3.29 -2.5,-4.03v8.06c1.48,-0.74 2.5,-2.26 2.5,-4.03z" />
+
+    <!-- dấu X để mute -->
+    <path
+        android:fillColor="@android:color/black"
+        android:pathData="M18.3,5.71L16.89,7.12 18.77,9 16.89,10.88 18.3,12.29 20.18,10.41 22.07,12.29 23.48,10.88 21.59,9 23.48,7.12 22.07,5.71 20.18,7.59z" />
+</vector>

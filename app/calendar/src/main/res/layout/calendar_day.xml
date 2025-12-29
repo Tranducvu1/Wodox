@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="day"
+            type="com.kizitonwose.calendar.core.CalendarDay" />
+        <variable
+            name="isSelected"
+            type="Boolean" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:gravity="center_horizontal|top"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/dp_2"
+        android:paddingBottom="@dimen/dp_2">
+
+        <FrameLayout
+            android:layout_width="@dimen/dp_32"
+            android:layout_height="@dimen/dp_20"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tvDayNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@{isSelected ? @color/primary : @android:color/black}"
+                android:text="@{String.valueOf(day.date.dayOfMonth)}"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/llTasksList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|top"
+            android:orientation="vertical" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

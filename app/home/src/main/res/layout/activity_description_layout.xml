@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.wodox.ui.task.taskdetail.description.DescriptionUiViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/white"
+            android:elevation="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_back"
+                android:padding="8dp"
+                app:tint="@color/color2B2B2B" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginStart="@dimen/dp_8"
+                android:fontFamily="?attr/titleTextColor"
+                android:text="@string/description"
+                android:textColor="@color/color2B2B2B"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btnDone"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/done"
+                android:fontFamily="?attr/titleTextColor"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/sp_16"
+                android:textStyle="bold" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0"
+            android:clipToPadding="false"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/dp_20"
+                android:paddingTop="@dimen/dp_16"
+                android:paddingBottom="@dimen/dp_100">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/editorCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/dp_12"
+                    app:cardElevation="@dimen/dp_2"
+                    app:contentPadding="@dimen/dp_16"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeColor="@color/color3D2A00"
+                    app:strokeWidth="@dimen/dp_1">
+
+                    <com.wodox.common.view.colorpicker.AppEditText
+                        android:id="@+id/etDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:cursorVisible="true"
+                        android:fontFamily="?attr/titleTextColor"
+                        android:gravity="top|start"
+                        android:maxLength="200"
+                        android:hint="@string/description"
+                        android:lineSpacingExtra="6dp"
+                        android:minHeight="@dimen/dp_300"
+                        android:onTextChanged="@{(text, start, before, count) -> viewModel.onTextChangeDescription(text)}"
+                        android:paddingTop="@dimen/dp_8"
+                        android:textColor="@color/color2B2B2B"
+                        android:textColorHint="#9E9E9E"
+                        android:textSize="@dimen/sp_16"
+                        tools:text="Enter your description here..." />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/tvCharCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:layout_marginEnd="@dimen/dp_4"
+                    android:textColor="#757575"
+                    android:textSize="@dimen/sp_12"
+                    app:layout_constraintEnd_toEndOf="@id/editorCard"
+                    app:layout_constraintTop_toBottomOf="@id/editorCard"
+                    tools:text="0 / 200" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/optionMenuContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="8dp"
+            android:paddingHorizontal="@dimen/dp_8"
+            android:paddingTop="@dimen/dp_8"
+            android:visibility="@{viewModel.visibleKeyboard &amp;&amp; viewModel.isFormatFont}"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <View
+                    android:layout_width="40dp"
+                    android:layout_height="4dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_handle_bar" />
+
+                <com.wodox.ui.task.taskdetail.description.optionmenu.DescriptionOptionMenuView
+                    android:id="@+id/optionMenuView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/textSizePickerContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:layout_constraintBottom_toTopOf="@id/optionMenuContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible">
+
+            <com.wodox.common.view.colorpicker.TextSizePopupView
+                android:id="@+id/tvTextSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:padding="12dp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fabEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_32"
+            android:layout_marginBottom="@dimen/dp_54"
+            android:contentDescription="@string/edit"
+            android:text="@string/edit"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+
+            app:backgroundTint="@color/primary"
+            app:elevation="6dp"
+            app:hoveredFocusedTranslationZ="8dp"
+            app:iconSize="20dp"
+            android:gravity="center"
+            app:iconTint="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:pressedTranslationZ="12dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

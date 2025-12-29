@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2015-2023 Emanuel Moecklin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.onegravity.rteditor.spans;
+
+import android.graphics.Bitmap;
+
+import com.onegravity.rteditor.api.RTApi;
+import com.onegravity.rteditor.api.media.RTImage;
+import com.onegravity.rteditor.api.media.RTMedia;
+
+/**
+ * An ImageSpan representing an embedded image.
+ */
+public class ImageSpan extends MediaSpan {
+
+    public ImageSpan(RTImage image, boolean isSaved) {
+        super(image, isSaved);
+    }
+
+
+    public ImageSpan(RTMedia media, Bitmap bitmap) {
+        super(media, bitmap);
+    }
+
+
+    public RTImage getImage() {
+        return (RTImage) mMedia;
+    }
+
+}

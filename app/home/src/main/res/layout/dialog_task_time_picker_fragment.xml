@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dialog_round"
+        android:padding="@dimen/dp_20">
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:contentDescription="@string/close"
+            android:src="@drawable/ic_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:text="@string/select_time"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/btnClose"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/timePickerContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_24"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.shawnlin.numberpicker.NumberPicker
+                    android:id="@+id/hourPicker"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_180"
+                    android:layout_marginEnd="@dimen/dp_8"
+                    app:np_dividerColor="@color/primary"
+                    app:np_dividerDistance="@dimen/dp_50"
+                    app:np_dividerThickness="@dimen/dp_1"
+                    app:np_dividerType="underline"
+                    app:np_max="23"
+                    app:np_min="0"
+                    app:np_selectedTextColor="@color/primary"
+                    app:np_selectedTextSize="@dimen/sp_24"
+                    app:np_textColor="@color/black"
+                    app:np_textSize="@dimen/sp_16"
+                    app:np_value="0"
+                    app:np_wheelItemCount="5"
+                    app:np_wrapSelectorWheel="true" />
+
+                <TextView
+                    android:id="@+id/tvHourLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:layout_marginEnd="@dimen/dp_8"
+                    android:gravity="center"
+                    android:text="@string/hour"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/sp_12" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingHorizontal="@dimen/dp_4"
+                android:text=":"
+                android:textSize="@dimen/sp_24"
+                android:textStyle="bold"
+                app:np_dividerColor="@color/primary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.shawnlin.numberpicker.NumberPicker
+                    android:id="@+id/minutePicker"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_180"
+                    android:layout_marginStart="@dimen/dp_8"
+                    app:np_dividerColor="@color/primary"
+                    app:np_dividerDistance="@dimen/dp_50"
+                    app:np_dividerThickness="@dimen/dp_1"
+                    app:np_dividerType="underline"
+                    app:np_max="59"
+                    app:np_min="0"
+                    app:np_selectedTextColor="@color/primary"
+                    app:np_selectedTextSize="@dimen/sp_24"
+                    app:np_textColor="@color/black"
+                    app:np_textSize="@dimen/sp_16"
+                    app:np_value="0"
+                    app:np_wheelItemCount="5"
+                    app:np_wrapSelectorWheel="true" />
+
+                <TextView
+                    android:id="@+id/tvMinuteLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_8"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:gravity="center"
+                    android:text="@string/minute"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/sp_12" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_24"
+            android:minHeight="@dimen/dp_48"
+            android:text="@string/done"
+            android:textAllCaps="false"
+            android:textSize="@dimen/sp_16"
+            app:cornerRadius="@dimen/dp_8"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/timePickerContainer" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

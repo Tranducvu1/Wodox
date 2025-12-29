@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.wodox.ui.task.taskdetail.checklist.CheckListViewModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/dp_8"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_rounded_top_home"
+        android:clipToOutline="true"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_8">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivBack"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_marginStart="@dimen/dp_8"
+                android:src="@drawable/ic_back"
+                android:tint="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingEnd="@dimen/dp_12"
+                android:text="@string/check_list"
+                android:textSize="@dimen/sp_18"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
+            android:gravity="center"
+            android:padding="@dimen/dp_16"
+            android:paddingHorizontal="@dimen/dp_8"
+            android:text="@string/add_first_checklist_item"
+            android:textColor="@color/gray1F1F1F"
+            android:textSize="@dimen/sp_16"
+            android:visibility="@{viewModel.uiState.checkList.empty ? View.VISIBLE : View.GONE}" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCheckList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_12"
+            android:paddingHorizontal="@dimen/dp_16"
+            android:visibility="@{viewModel.uiState.checkList.empty ? View.GONE : View.VISIBLE}" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardInputContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:visibility="gone"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="@dimen/dp_12"
+            app:cardElevation="@dimen/dp_2"
+            app:strokeColor="@color/colorPrimary"
+            app:strokeWidth="@dimen/dp_2">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/dp_12">
+
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/cbNewItem"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginEnd="@dimen/dp_8"
+                    android:enabled="false" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNewItem"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/new_checklist_item"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:maxLines="3"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/sp_16" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivConfirm"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginStart="@dimen/dp_8"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_add"
+                    android:tint="@color/colorPrimary" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivCancel"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginStart="@dimen/dp_8"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_close"
+                    android:tint="@color/gray1F1F1F" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/btnAddItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16"
+            android:background="@drawable/bg_add_check_list"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/dp_8">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:src="@drawable/ic_add"
+                android:tint="@color/colorPrimary" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:text="@string/add_item"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/sp_16" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

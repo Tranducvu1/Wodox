@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="@dimen/dp_24"
+    android:height="@dimen/dp_24"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M0,0h24v24H0z" />
+
+    <path
+        android:fillColor="@drawable/gradient_activity"
+        android:pathData="M12,2a10,10 0 1,0 10,10A10,10 0 0,0 12,2z" />
+</vector>

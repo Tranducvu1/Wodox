@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="ViewModel"
+            type="com.wodox.ui.task.taskdetail.activitytask.ActivityTaskViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottomCommentBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="@dimen/dp_12"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtComment"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_44"
+                android:background="@drawable/bg_edit_text_comment"
+                android:gravity="center_vertical"
+                android:hint="@string/write_comment"
+                android:inputType="textMultiLine"
+                android:paddingStart="@dimen/dp_12"
+                android:paddingEnd="@dimen/dp_12"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray1F1F1F"
+                android:textSize="@dimen/sp_14"
+                app:layout_constraintEnd_toStartOf="@id/btnToggleFormat"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <HorizontalScrollView
+                android:id="@+id/llFormatOptions"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_44"
+                android:layout_marginTop="@dimen/dp_8"
+                android:scrollbars="none"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/edtComment">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/dp_8"
+                    android:paddingEnd="@dimen/dp_8">
+
+                    <ImageView
+                        android:id="@+id/btnBold"
+                        android:layout_width="@dimen/dp_40"
+                        android:layout_height="@dimen/dp_40"
+                        android:background="@drawable/bg_format_btn"
+                        android:clickable="true"
+                        android:contentDescription="@string/bold"
+                        android:focusable="true"
+                        android:padding="@dimen/dp_8"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_bold" />
+
+                    <ImageView
+                        android:id="@+id/btnItalic"
+                        android:layout_width="@dimen/dp_40"
+                        android:layout_height="@dimen/dp_40"
+                        android:layout_marginStart="@dimen/dp_8"
+                        android:background="@drawable/bg_format_btn"
+                        android:clickable="true"
+                        android:contentDescription="@string/italic"
+                        android:focusable="true"
+                        android:padding="@dimen/dp_8"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_italic" />
+
+                    <ImageView
+                        android:id="@+id/btnUnderline"
+                        android:layout_width="@dimen/dp_40"
+                        android:layout_height="@dimen/dp_40"
+                        android:layout_marginStart="@dimen/dp_8"
+                        android:background="@drawable/bg_format_btn"
+                        android:clickable="true"
+                        android:contentDescription="@string/underline"
+                        android:focusable="true"
+                        android:padding="@dimen/dp_8"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_underline" />
+
+                    <ImageView
+                        android:id="@+id/btnStrikethrough"
+                        android:layout_width="@dimen/dp_40"
+                        android:layout_height="@dimen/dp_40"
+                        android:layout_marginStart="@dimen/dp_8"
+                        android:background="@drawable/bg_format_btn"
+                        android:clickable="true"
+                        android:contentDescription="@string/strikethrough"
+                        android:focusable="true"
+                        android:padding="@dimen/dp_8"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_strikethrough" />
+
+                    <ImageView
+                        android:id="@+id/btnCode"
+                        android:layout_width="@dimen/dp_40"
+                        android:layout_height="@dimen/dp_40"
+                        android:layout_marginStart="@dimen/dp_8"
+                        android:background="@drawable/bg_format_btn"
+                        android:clickable="true"
+                        android:contentDescription="@string/code"
+                        android:focusable="true"
+                        android:padding="@dimen/dp_8"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_code" />
+
+                    <ImageView
+                        android:id="@+id/btnLink"
+                        android:layout_width="@dimen/dp_40"
+                        android:layout_height="@dimen/dp_40"
+                        android:layout_marginStart="@dimen/dp_8"
+                        android:background="@drawable/bg_format_btn"
+                        android:clickable="true"
+                        android:contentDescription="@string/link"
+                        android:focusable="true"
+                        android:padding="@dimen/dp_8"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_link" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <ImageView
+                android:id="@+id/btnToggleFormat"
+                android:layout_width="@dimen/dp_44"
+                android:layout_height="@dimen/dp_44"
+                android:layout_marginStart="@dimen/dp_8"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/toggle_format"
+                android:focusable="true"
+                android:padding="@dimen/dp_8"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_text_format"
+                app:layout_constraintEnd_toStartOf="@id/btnSend"
+                app:layout_constraintStart_toEndOf="@id/edtComment"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/btnSend"
+                android:layout_width="@dimen/dp_44"
+                android:layout_height="@dimen/dp_44"
+                android:layout_marginStart="@dimen/dp_8"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/send"
+                android:focusable="true"
+                android:padding="@dimen/dp_8"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_send"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/primary" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

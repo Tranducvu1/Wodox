@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="channel"
+            type="com.wodox.domain.chat.model.Channel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_12"
+        android:layout_marginVertical="@dimen/dp_6"
+        app:cardCornerRadius="@dimen/dp_16"
+        app:cardElevation="@dimen/dp_2">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dp_12">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/channelIconCard"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="@dimen/dp_16"
+                app:cardElevation="0dp"
+                app:strokeColor="#007AFF"
+                app:strokeWidth="1.5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/ivChannelIcon"
+                        android:layout_width="@dimen/dp_36"
+                        android:layout_height="@dimen/dp_36"
+                        android:src="@drawable/ic_channel" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvChannelName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_12"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{channel.name}"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btnJoin"
+                app:layout_constraintStart_toEndOf="@id/channelIconCard"
+                app:layout_constraintTop_toTopOf="@id/channelIconCard"
+                tools:text="General Discussion" />
+
+            <!-- Last Message -->
+            <TextView
+                android:id="@+id/tvLastMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_4"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{channel.lastMessageText ?? `No messages yet`}"
+                android:textColor="#666666"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="@id/tvChannelName"
+                app:layout_constraintStart_toStartOf="@id/tvChannelName"
+                app:layout_constraintTop_toBottomOf="@id/tvChannelName"
+                tools:text="John: Hey everyone!" />
+
+            <LinearLayout
+                android:id="@+id/layoutMemberCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_4"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@id/tvLastMessage"
+                app:layout_constraintTop_toBottomOf="@id/tvLastMessage">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_person_white"
+                    app:tint="#999999" />
+
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_4"
+                    android:text="@{String.valueOf(channel.memberCount) + ` members`}"
+                    android:textColor="#999999"
+                    android:textSize="12sp"
+                    tools:text="24 members" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnJoin"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="@dimen/dp_4"
+                android:minWidth="80dp"
+                android:paddingHorizontal="@dimen/dp_16"
+                android:text="Join"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#007AFF"
+                app:cornerRadius="@dimen/dp_18"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/ivPrivateIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_lock"
+                android:visibility="@{channel.isPrivate ? android.view.View.VISIBLE : android.view.View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@id/channelIconCard"
+                app:layout_constraintEnd_toEndOf="@id/channelIconCard"
+                app:tint="@android:color/white"
+                tools:visibility="gone" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>
