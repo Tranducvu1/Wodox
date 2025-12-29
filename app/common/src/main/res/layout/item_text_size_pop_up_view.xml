@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bg_number_picker"
+        android:padding="8dp">
+
+        <com.shawnlin.numberpicker.NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:np_dividerColor="@android:color/transparent"
+            app:np_dividerThickness="0dp"
+            app:np_max="500"
+            app:np_min="1"
+            app:np_selectedTextColor="@color/black"
+            app:np_selectedTextSize="@dimen/sp_22"
+            app:np_textColor="#A6A6A6"
+            app:np_textSize="@dimen/sp_14"
+            app:np_value="24"
+            app:np_wheelItemCount="5"
+            app:np_wrapSelectorWheel="false" />
+    </LinearLayout>
+</layout>

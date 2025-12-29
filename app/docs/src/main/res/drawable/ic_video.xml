@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <path
+        android:fillColor="@drawable/gradient_play"
+        android:pathData="M10,10
+                          Q10,10 10,90
+                          Q10,90 30,80
+                          L85,50
+                          L30,20
+                          Q10,10 10,10Z" />
+</vector>

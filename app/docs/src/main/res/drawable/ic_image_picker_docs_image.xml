@@ -1,0 +1,37 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <path
+        android:fillColor="@drawable/gallery_gradient_bg"
+        android:pathData="M10,0
+                          H90
+                          Q100,0 100,10
+                          V90
+                          Q100,100 90,100
+                          H10
+                          Q0,100 0,90
+                          V10
+                          Q0,0 10,0Z" />
+
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M25,65 L55,25 L85,65 Z" />
+
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M15,65 L35,40 L55,65 Z" />
+
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M65,22
+                          A4,4 0 1,1 64.99,22Z" />
+
+    <path
+        android:fillColor="#22000000"
+        android:pathData="M25,75
+                          Q50,85 75,75
+                          A25,8 0 1,1 25,75Z" />
+</vector>

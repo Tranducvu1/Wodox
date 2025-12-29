@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="17">
+      <module name="WodoX.app.auth" target="21" />
+      <module name="WodoX.app.calendar" target="21" />
+      <module name="WodoX.app.chat" target="21" />
+      <module name="WodoX.app.common" target="21" />
+      <module name="WodoX.app.core" target="21" />
+      <module name="WodoX.app.docs" target="21" />
+      <module name="WodoX.app.home" target="21" />
+      <module name="WodoX.app.intro" target="21" />
+      <module name="WodoX.app.main" target="21" />
+      <module name="WodoX.app.mywork" target="21" />
+      <module name="WodoX.app.resources" target="21" />
+      <module name="WodoX.app.setting" target="21" />
+      <module name="WodoX.config" target="21" />
+      <module name="WodoX.data.asset" target="21" />
+      <module name="WodoX.data.base" target="21" />
+      <module name="WodoX.data.chat" target="21" />
+      <module name="WodoX.data.common" target="21" />
+      <module name="WodoX.data.docs" target="21" />
+      <module name="WodoX.data.home" target="21" />
+      <module name="WodoX.data.main" target="21" />
+      <module name="WodoX.data.prefs" target="21" />
+      <module name="WodoX.data.remote" target="21" />
+      <module name="WodoX.data.user" target="21" />
+      <module name="WodoX.domain.asset" target="21" />
+      <module name="WodoX.domain.base" target="21" />
+      <module name="WodoX.domain.chat" target="21" />
+      <module name="WodoX.domain.common" target="21" />
+      <module name="WodoX.domain.docs" target="21" />
+      <module name="WodoX.domain.home" target="21" />
+      <module name="WodoX.domain.main" target="21" />
+      <module name="WodoX.domain.remote" target="21" />
+      <module name="WodoX.domain.user" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

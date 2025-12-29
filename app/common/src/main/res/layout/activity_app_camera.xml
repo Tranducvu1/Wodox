@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.wodox.common.ui.appcamera.AppCameraViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFBED">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar_detail" />
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/preview"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintBottom_toTopOf="@id/ivTake"
+            android:layout_marginTop="@dimen/dp_4"
+            android:layout_marginBottom="@dimen/dp_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivTake"
+            style="@style/Theme.AIBuddy.ClickableView.Outline"
+            android:layout_width="@dimen/dp_73"
+            android:layout_height="@dimen/dp_73"
+            android:layout_marginBottom="@dimen/dp_16"
+            android:background="@drawable/bg_capture_camera"
+            android:enabled="@{!viewModel.isCapturing}"
+            android:padding="@dimen/dp_14"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.wodox.common.ui.menuview.ShadowView
+            style="@style/Theme.AIBuddy.Shadow.Default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_24"
+            app:layout_constraintBottom_toBottomOf="@id/ivTake"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ivTake"
+            app:sv_color="@color/colorShadowGallery"
+            app:sv_mask="@drawable/bg_mask_circle">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivGallery"
+                style="@style/Theme.AIBuddy.Shadow.Default"
+                android:layout_width="@dimen/dp_50"
+                android:layout_height="@dimen/dp_50"
+                android:background="@drawable/ic_math_gallery"
+                android:enabled="@{!viewModel.isCapturing}" />
+
+
+        </com.wodox.common.ui.menuview.ShadowView>
+
+        <com.wodox.common.ui.menuview.ShadowView
+            style="@style/Theme.AIBuddy.Shadow.Default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_24"
+            android:layout_marginEnd="@dimen/dp_24"
+            app:layout_constraintBottom_toBottomOf="@id/ivTake"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ivTake"
+            app:sv_color="@color/colorShadowFlash"
+            app:sv_mask="@drawable/bg_mask_circle">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivFlash"
+                style="@style/Theme.AIBuddy.ClickableView.Outline"
+                android:layout_width="@dimen/dp_50"
+                android:layout_height="@dimen/dp_50"
+                android:background="@{viewModel.isFlashTurnOn ? @drawable/ic_math_flash_on : @drawable/ic_math_flash}"
+                android:enabled="@{!viewModel.isCapturing}"
+                android:visibility="gone"
+                app:isSelected="@{viewModel.isFlashTurnOn}"
+                tools:background="@drawable/ic_math_flash_on" />
+
+        </com.wodox.common.ui.menuview.ShadowView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

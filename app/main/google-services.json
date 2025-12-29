@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "918541727636",
+    "project_id": "wodox-3b14a",
+    "storage_bucket": "wodox-3b14a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918541727636:android:e50807a57b259d4a5f8181",
+        "android_client_info": {
+          "package_name": "com.wodox.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "918541727636-ia8vcrrumgt9hpvem4qpee43qhlvth9l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv3BLSRXKFxnpX_vUy-zpoS88vMG8Z2bY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "918541727636-ia8vcrrumgt9hpvem4qpee43qhlvth9l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

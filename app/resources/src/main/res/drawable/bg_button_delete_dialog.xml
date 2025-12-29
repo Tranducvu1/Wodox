@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/bgLayer">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/dp_18" />
+            <solid android:color="@color/colorDelete" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/dp_18" />
+            <stroke
+                android:width="@dimen/dp_2"
+                android:color="@color/white" />
+        </shape>
+    </item>
+
+</layer-list>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.Main.DefaultDialog" parent="Theme.Core.DefaultDialog">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary</item>
+        <item name="colorAccent">@color/black</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:titleTextColor">?attr/titleTextColor</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="secondTextColor">?attr/titleTextColor</item>
+        <item name="negativeBackgroundColor">@color/grayF2F2F7</item>
+        <item name="negativeTitleColor">?attr/detailTextColor</item>
+        <item name="positiveBackgroundColor">?attr/primaryColor</item>
+        <item name="positiveTitleColor">@color/white</item>
+        <item name="primaryColor">@color/primary</item>
+        <item name="detailTextColor">@color/gray7E7E7E</item>
+        <item name="secondaryDetailTextColor">@color/grayB3B3B3</item>
+        <item name="secondPrimaryColor">@color/secondary</item>
+        <item name="secondaryBackgroundColor">@color/grayF2F2F7</item>
+        <item name="thirdBackgroundColor">#DEDEDE</item>
+        <item name="disableColor">@color/disableGrayColor</item>
+        <item name="titleTextColor">@color/gray1F1F1F</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:alertDialogTheme">@style/Theme.Main.PopupMenu</item>
+    </style>
+
+    <style name="Theme.Main.Dialog.FullScreen" parent="Theme.Core">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.AIBuddy.Text.Default" parent="Theme.Core">
+        <item name="android:fontFamily">@font/fc_lilita_one_regular</item>
+    </style>
+
+    <!-- Sửa: Thay Theme.AppCompat.Light sang Theme.MaterialComponents.Light -->
+    <style name="Theme.SwitchTheme" parent="Theme.MaterialComponents.Light">
+        <item name="android:colorControlActivated">@color/primary</item>
+    </style>
+
+    <style name="Theme.Main.PopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">?attr/titleTextColor</item>
+        <item name="android:itemBackground">@android:color/transparent</item>
+        <item name="android:popupBackground">@drawable/bg_corner_12</item>
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
+
+    <style name="Theme.Main.ClickableView" parent="Theme.Core">
+        <item name="android:layout_width">@dimen/dp_24</item>
+        <item name="android:layout_height">@dimen/dp_24</item>
+        <item name="android:padding">@dimen/dp_2</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Theme.Main.ClickableView.Outline" parent="Theme.Main.ClickableView">
+        <item name="android:clipToOutline" tools:targetApi="s">true</item>
+    </style>
+
+    <style name="CustomTransparentBackgroundDialog" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_height">@dimen/dp_36</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
+    <style name="Theme.Main.Transparent.Dialog" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
+    <style name="Theme.Main.ToolbarTitleText.Default" parent="Theme.Core">
+        <item name="android:fontFamily">?attr/fontMedium</item>
+        <item name="android:textSize">@dimen/sp_18</item>
+    </style>
+
+    <style name="Theme.Main.Text.Default" parent="Theme.Core">
+        <item name="android:fontFamily">?attr/fontRegular</item>
+    </style>
+
+    <style name="Theme.Main.Button.Default" parent="Theme.Core">
+        <item name="android:fontFamily">@font/nunito_bold</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:clipToOutline" tools:targetApi="31">true</item>
+    </style>
+
+    <style name="Theme.Main.PopupWindow" parent="Widget.AppCompat.PopupWindow">
+        <item name="android:outlineSpotShadowColor" tools:ignore="NewApi">@color/gray1F1F1F</item>
+        <item name="android:outlineAmbientShadowColor" tools:ignore="NewApi">@color/gray1F1F1F
+        </item>
+    </style>
+
+    <style name="Theme.Main.TextStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:fontFamily">?attr/fontRegular</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Theme.Main.Toolbar.Back" parent="Theme.Main.ClickableView.Outline">
+        <item name="tint">?attr/titleTextColor</item>
+        <item name="android:src">@drawable/ic_back</item>
+        <item name="android:layout_width">@dimen/dp_32</item>
+        <item name="android:layout_height">@dimen/dp_32</item>
+        <item name="android:padding">@dimen/dp_6</item>
+        <item name="android:background">@drawable/bg_back</item>
+    </style>
+
+    <style name="QuickChip">
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_height">@dimen/dp_36</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/bg_chip</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="DialogPrimaryButton">
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_height">@dimen/dp_48</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/color3D2A00</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DialogCancelButton">
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_height">@dimen/dp_48</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="MyCalendarDateText" parent="@android:style/TextAppearance.Material.Body1">
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
+    <style name="MyCalendarWeekText" parent="@android:style/TextAppearance.Material.Medium">
+        <item name="android:textColor">@color/gray1F1F1F</item>
+    </style>
+
+    <style name="MyCalendarStyle" parent="@android:style/Widget.Material.CalendarView">
+        <item name="android:weekDayTextAppearance">@style/MyCalendarWeekText</item>
+        <item name="android:dateTextAppearance">@style/MyCalendarDateText</item>
+        <item name="android:selectedDateVerticalBar">@drawable/calendar_selected_bg</item>
+    </style>
+
+    <style name="Theme.AIBuddy.ClickableView" parent="Theme.Core">
+        <item name="android:layout_width">@dimen/dp_24</item>
+        <item name="android:layout_height">@dimen/dp_24</item>
+        <item name="android:padding">@dimen/dp_2</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+    </style>
+
+</resources>

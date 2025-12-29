@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="com.wodox.ui.task.taskdetail.description.optionmenu.DescriptionOptionMenu" />
+        <variable
+            name="menus"
+            type="java.util.ArrayList&lt;DescriptionOptionMenu&gt;" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:paddingVertical="@dimen/dp_12"
+        android:paddingHorizontal="@dimen/dp_16"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@color/colorF5F4EB"
+        android:orientation="horizontal">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal"
+            app:items="@{menus}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="7" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

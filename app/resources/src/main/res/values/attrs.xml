@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Core" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="primaryColor">@color/primary</item>
+        <item name="detailTextColor">@color/black</item>
+        <item name="primaryBackgroundColor">@android:color/white</item>
+        <item name="secondPrimaryColor">@color/black</item>
+        <item name="secondaryBackgroundColor">@android:color/white</item>
+
+        <item name="fontSemiBold">@font/nunito_semi_bold</item>
+        <item name="fontBold">@font/nunito_bold</item>
+        <item name="fontMedium">@font/nunito_medium</item>
+        <item name="fontRegular">@font/nunito_regular</item>
+        <item name="titleTextColor">@color/black</item>
+    </style>
+
+
+    <style name="Theme.Core.DefaultDialog" parent="Theme.Core">
+        <!-- Base dialog settings -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- Các phần còn lại giữ nguyên -->
+    <attr name="primaryColor" format="color" />
+    <attr name="detailTextColor" format="color" />
+    <attr name="primaryBackgroundColor" format="color" />
+    <attr name="secondPrimaryColor" format="color" />
+    <attr name="secondaryBackgroundColor" format="color" />
+    <attr name="secondaryDetailTextColor" format="color" />
+
+    <!-- Extra Theme colors -->
+    <attr name="colorPrimary" format="color" />
+    <attr name="colorPrimaryDark" format="color" />
+    <attr name="colorAccent" format="color" />
+
+    <!-- Dialog Buttons -->
+    <attr name="negativeBackgroundColor" format="color" />
+    <attr name="negativeTitleColor" format="color" />
+    <attr name="positiveBackgroundColor" format="color" />
+    <attr name="positiveTitleColor" format="color" />
+
+    <!-- Misc colors -->
+    <attr name="bottomNavBackgroundColor" format="color" />
+    <attr name="shadowColor" format="color" />
+    <attr name="deActiveTabBackgroundColor" format="color" />
+    <attr name="titleTextColor" format="color" />
+    <attr name="secondTextColor" format="color" />
+
+    <!-- Fonts -->
+    <attr name="fontSemiBold" format="reference" />
+    <attr name="fontBold" format="reference" />
+    <attr name="fontMedium" format="reference" />
+    <attr name="fontRegular" format="reference" />
+
+    <!-- Outline attrs -->
+    <declare-styleable name="outlineAttrs">
+        <attr name="outlineColor" format="color"/>
+        <attr name="outlineWidth" format="float"/>
+    </declare-styleable>
+
+    <!-- Setting Item View -->
+    <declare-styleable name="SettingItem">
+        <attr name="setting_title" format="string" />
+        <attr name="setting_icon" format="reference" />
+        <attr name="setting_toggleEnabled" format="boolean" />
+        <attr name="setting_detail" format="string" />
+        <attr name="setting_arrowEnabled" format="boolean" />
+        <attr name="setting_showLine" format="boolean" />
+        <attr name="setting_title_all_cap" format="boolean" />
+        <attr name="setting_show_origin_icon" format="boolean" />
+    </declare-styleable>
+
+    <!-- Shadow view -->
+    <style name="Theme.AIBuddy.Shadow.Default" parent="Theme.Core">
+        <item name="sv_mask">@drawable/bg_mask_circle</item>
+        <item name="sv_dx">@dimen/dp_1</item>
+        <item name="sv_dy">@dimen/dp_2</item>
+    </style>
+
+    <declare-styleable name="ShadowView">
+        <attr name="sv_mask" format="reference" />
+        <attr name="sv_color" format="reference" />
+        <attr name="sv_dx" format="reference" />
+        <attr name="sv_dy" format="reference" />
+    </declare-styleable>
+
+    <!-- Color Theme Extensions -->
+    <declare-styleable name="ColorTheme">
+        <attr name="thirdBackgroundColor" format="color" />
+        <attr name="disableColor" format="color" />
+        <attr name="gradientColors" format="reference" />
+        <attr name="secondFontBold" format="reference"/>
+    </declare-styleable>
+
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Màu chủ đạo -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+
+
+</resources>

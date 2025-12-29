@@ -1,0 +1,92 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="menu"
+            type="com.wodox.main.ui.main.bottombar.BottomBarMenu" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_2"
+        tools:layout_height="@dimen/dp_68">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ctContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:clipToOutline="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="UnusedAttribute">
+
+            <FrameLayout
+                android:id="@+id/frameSelection"
+                android:layout_width="@dimen/dp_34"
+                android:layout_height="@dimen/dp_36"
+                android:background="@drawable/bg_bottom_bar_selection"
+                android:selected="@{menu.isSelected}"
+                android:visibility="@{menu.isSelected}"
+                tools:background="@drawable/bg_bottom_bar_selection"
+                tools:selected="true"
+                tools:visibility="visible">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivIcon"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/dp_2"
+                    android:padding="@dimen/dp_1"
+                    android:src="@{menu.selectedIcon}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/ic_bottom_bar_home" />
+
+            </FrameLayout>
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_gravity="center"
+                android:src="@{menu.icon}"
+                android:visibility="@{!menu.isSelected}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/ic_bottom_bar_home"
+                tools:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                style="@style/Theme.AIBuddy.Text.Default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lines="1"
+                android:text="@{menu.title}"
+                android:textColor="?attr/titleTextColor"
+                android:textSize="@dimen/sp_12"
+                tools:text="@string/home" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
