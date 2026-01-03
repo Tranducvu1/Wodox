@@ -3,6 +3,7 @@ package com.wodox.data.home.datasource.local.database.task.mapper
 import com.wodox.base.base.AbstractMapper
 import com.wodox.data.home.datasource.local.database.task.entity.CheckListEntity
 import com.wodox.domain.home.model.local.CheckList
+import java.util.Date
 import javax.inject.Inject
 
 class CheckListMapper @Inject constructor() :
@@ -13,8 +14,8 @@ class CheckListMapper @Inject constructor() :
             id = entity.id,
             taskId = entity.taskId,
             description = entity.description,
-            createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt,
+            createdAt = entity.createdAt ?: Date(),
+            updatedAt = entity.updatedAt ?: Date(),
             deletedAt = entity.deletedAt
         )
     }
@@ -30,4 +31,3 @@ class CheckListMapper @Inject constructor() :
         )
     }
 }
-

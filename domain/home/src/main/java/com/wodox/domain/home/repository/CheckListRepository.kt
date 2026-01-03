@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 interface CheckListRepository {
-    fun getAllCheckListByTaskID(id: UUID): Flow<List<CheckList>>
+    fun getAllCheckListByTaskID(id: String): Flow<List<CheckList>>
 
     suspend fun save(checkList: CheckList): CheckList?
 }

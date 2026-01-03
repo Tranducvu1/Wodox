@@ -1,6 +1,7 @@
 package com.wodox.chat.ui.chat
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.wodox.domain.chat.model.UserWithFriendStatus
 import com.wodox.domain.chat.model.local.Notification
@@ -17,7 +18,7 @@ import com.wodox.domain.home.usecase.FindRelationUseCase
 import com.wodox.domain.home.usecase.GetFriendAcceptUseCase
 import com.wodox.domain.home.usecase.GetFriendRequestUseCase
 import com.wodox.domain.home.usecase.GetFriendSentUseCase
-import com.wodox.domain.home.usecase.GetTaskByTaskIdUseCase
+import com.wodox.domain.home.usecase.task.GetTaskByTaskIdUseCase
 import com.wodox.domain.home.usecase.Params
 import com.wodox.domain.user.model.User
 import com.wodox.domain.user.usecase.GetAllUserUseCase
@@ -47,14 +48,15 @@ class ChatViewModel @Inject constructor(
     private val getTaskByTaskIdUseCase: GetTaskByTaskIdUseCase,
 ) : BaseUiStateViewModel<ChatUiState, ChatUiEvent, ChatUiAction>(app) {
     private var previousNotificationCount = 0
-    
+
     override fun initialState(): ChatUiState = ChatUiState()
 
-    override fun onCreate() {
-        super.onCreate()
+    init {
         loadUser()
         loadNotifications()
+        android.util.Log.d("ChatViewModel", "Calling loadNotifications()...")
         loadChannels()
+        android.util.Log.d("ChatViewModel", "Calling loadChannels()...")
     }
 
     override fun handleAction(action: ChatUiAction) {
@@ -63,10 +65,12 @@ class ChatViewModel @Inject constructor(
                 action.friendId,
                 FriendStatus.ACCEPTED
             )
+
             is ChatUiAction.RejectFriend -> updateFriendStatus(
                 action.friendId,
                 FriendStatus.REJECTED
             )
+
             is ChatUiAction.LoadUser -> loadUser()
             is ChatUiAction.MarkNotificationAsRead -> markNotificationAsRead(action.notificationId)
             is ChatUiAction.DismissNotification -> dismissNotification(action.notificationId)
@@ -74,19 +78,40 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+
     private fun loadNotifications() {
         viewModelScope.launch(Dispatchers.IO) {
-            val currentUserId = getUserUseCase() ?: return@launch
-            getNotificationByUserIdUseCase(currentUserId).collect { notifications ->
-                val unreadCount = notifications.count { !it.isRead }
+            Log.d("ChatViewModel", "========================================")
+            Log.d("ChatViewModel", "LOAD NOTIFICATIONS - START")
+            Log.d("ChatViewModel", "========================================")
 
+            val currentUserId = getUserUseCase()
+            Log.d("ChatViewModel", "Current User ID: $currentUserId")
+
+            if (currentUserId == null) {
+                Log.e("ChatViewModel", "❌ currentUserId is NULL - ABORTING")
+                return@launch
+            }
+
+            getNotificationByUserIdUseCase(currentUserId).collect { notifications ->
+
+                val visibleNotifications = notifications
+                    .filter { it.deletedAt == null && !it.isRead }
+                    .sortedByDescending { it.createdAt }
+
+                val unreadCount = visibleNotifications.size
                 val shouldAnimate = unreadCount > previousNotificationCount
+
+                Log.d("ChatViewModel", "----------------------------------------")
+                Log.d("ChatViewModel", "📬 RAW notifications: ${notifications.size}")
+                Log.d("ChatViewModel", "👀 VISIBLE notifications: ${visibleNotifications.size}")
+                Log.d("ChatViewModel", "Unread count: $unreadCount")
+                Log.d("ChatViewModel", "Should animate: $shouldAnimate")
+                Log.d("ChatViewModel", "----------------------------------------")
 
                 updateState {
                     it.copy(
-                        listNotifications = notifications
-                            .sortedByDescending { it.createdAt }
-                            .toArrayList(),
+                        listNotifications = visibleNotifications.toArrayList(),
                         unreadNotificationCount = unreadCount,
                         hasNewNotification = shouldAnimate
                     )
@@ -97,7 +122,10 @@ class ChatViewModel @Inject constructor(
                         sendEvent(ChatUiEvent.ResetNotificationAnimation)
                     }
                 }
+
                 previousNotificationCount = unreadCount
+                Log.d("ChatViewModel", "Previous count updated: $previousNotificationCount")
+                Log.d("ChatViewModel", "========================================")
             }
         }
     }
@@ -153,29 +181,83 @@ class ChatViewModel @Inject constructor(
 
     private fun updateFriendStatus(friendId: UUID, newStatus: FriendStatus) {
         viewModelScope.launch(Dispatchers.IO) {
-            val currentUserId = getUserUseCase() ?: return@launch
-            val relation = findRelationUseCase(Params(currentUserId, friendId)) ?: return@launch
-            if (!isActionAllowed(currentUserId, relation, newStatus)) {
+            Log.d("FriendViewModel", "=== UPDATE FRIEND STATUS START ===")
+            Log.d("FriendViewModel", "friendId: $friendId")
+            Log.d("FriendViewModel", "newStatus: $newStatus")
+
+            val currentUserId = getUserUseCase()
+            Log.d("FriendViewModel", "currentUserId: $currentUserId")
+            if (currentUserId == null) {
+                Log.w("FriendViewModel", "currentUserId is NULL - ABORTING")
                 return@launch
             }
-            addFriendUseCase(relation.copy(status = newStatus))
+
+            Log.d("FriendViewModel", "Finding relation...")
+            val relation = findRelationUseCase(Params(currentUserId, friendId))
+            Log.d("FriendViewModel", "relation found: $relation")
+            if (relation == null) {
+                Log.w("FriendViewModel", "relation is NULL - ABORTING")
+                return@launch
+            }
+
+            Log.d("FriendViewModel", "Checking if action is allowed...")
+            val isAllowed = isActionAllowed(currentUserId, relation, newStatus)
+            Log.d("FriendViewModel", "isActionAllowed: $isAllowed")
+            if (!isAllowed) {
+                Log.w("FriendViewModel", "Action NOT ALLOWED - ABORTING")
+                return@launch
+            }
+
+            val updatedRelation = relation.copy(status = newStatus)
+            Log.d("FriendViewModel", "Updated relation: $updatedRelation")
+            Log.d("FriendViewModel", "Calling addFriendUseCase...")
+
+            try {
+                addFriendUseCase(updatedRelation)
+                Log.d("FriendViewModel", "=== UPDATE FRIEND STATUS SUCCESS ===")
+            } catch (e: Exception) {
+                Log.e("FriendViewModel", "=== UPDATE FRIEND STATUS FAILED ===")
+                Log.e("FriendViewModel", "Error: ${e.message}", e)
+            }
         }
     }
 
-    private fun markNotificationAsRead(notificationId: UUID) {
+    private fun markNotificationAsRead(notificationId: Notification) {
         viewModelScope.launch(Dispatchers.IO) {
-            markAsReadNotificationUseCase(notificationId)
+            updateState { state ->
+                state.copy(
+                    listNotifications = state.listNotifications
+                        .filterNot { it.id.toString() == notificationId.toString() }
+                        .toArrayList(),
+                    unreadNotificationCount = (state.unreadNotificationCount - 1).coerceAtLeast(0)
+                )
+            }
+            val updatedNotification = notificationId.copy(
+                deletedAt = Date()
+            )
+            markAsReadNotificationUseCase(notificationId.id)
+            saveNotificationUseCase(updatedNotification)
         }
     }
 
     private fun dismissNotification(notification: Notification) {
         viewModelScope.launch(Dispatchers.IO) {
+            updateState { state ->
+                state.copy(
+                    listNotifications = state.listNotifications
+                        .filterNot { it.id == notification.id }
+                        .toArrayList(),
+                    unreadNotificationCount = (state.unreadNotificationCount - 1).coerceAtLeast(0)
+                )
+            }
+
             val updatedNotification = notification.copy(
                 deletedAt = Date()
             )
             saveNotificationUseCase(updatedNotification)
         }
     }
+
 
     private fun isActionAllowed(
         currentUserId: UUID,

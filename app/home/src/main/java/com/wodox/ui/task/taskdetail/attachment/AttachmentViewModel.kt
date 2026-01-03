@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.wodox.core.base.viewmodel.BaseUiStateViewModel
 import com.wodox.domain.home.model.local.Task
 import com.wodox.domain.home.model.local.TaskStatus
-import com.wodox.domain.home.usecase.SaveTaskUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

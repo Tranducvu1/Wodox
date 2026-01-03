@@ -8,8 +8,8 @@ import java.util.UUID
 data class ChannelMemberEntity(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
-    val channelId: String,
-    val userId: String,
+    val channelId: String = "",
+    val userId: String = "",
     val role: String = "MEMBER",
     val joinedAt: Long = System.currentTimeMillis()
 )

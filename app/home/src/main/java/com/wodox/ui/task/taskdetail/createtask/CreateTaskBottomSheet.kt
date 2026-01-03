@@ -137,18 +137,6 @@ class CreateTaskBottomSheet :
         binding.tvCreate.debounceClick {
             saveTask()
         }
-        binding.llSupport.debounceClick {
-            viewModel.dispatch(CreateTaskUiAction.AnalyzeUserSkill)
-        }
-        binding.llAssignees.debounceClick {
-            val bottomSheet = ListUserBottomSheet.newInstance()
-            bottomSheet.listener = object : ListUserBottomSheet.OnItemClickListener {
-                override fun onClick(id: UUID) {
-                    this@CreateTaskBottomSheet.viewModel.dispatch(CreateTaskUiAction.AssignUser(id))
-                }
-            }
-            bottomSheet.showAllowingStateLoss(childFragmentManager)
-        }
         binding.llDate.debounceClick {
             TaskDatePickerDialogFragment().apply {
                 onDateSelected = { start, end ->
@@ -206,7 +194,12 @@ class CreateTaskBottomSheet :
                             "EXPERT" -> 10
                             else -> 3
                         }
-                        viewModel.dispatch(CreateTaskUiAction.UpdateDifficulty(selectedDifficulty,menu.type.name))
+                        viewModel.dispatch(
+                            CreateTaskUiAction.UpdateDifficulty(
+                                selectedDifficulty,
+                                menu.type.name
+                            )
+                        )
                     }
                 })
         }

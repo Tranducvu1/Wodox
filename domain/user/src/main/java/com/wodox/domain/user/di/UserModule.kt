@@ -9,6 +9,7 @@ import com.wodox.domain.user.usecase.GetUserById
 import com.wodox.domain.user.usecase.GetUserUseCase
 import com.wodox.domain.user.usecase.SaveUserUseCase
 import com.wodox.domain.user.usecase.SignOutUseCase
+import com.wodox.domain.user.usecase.UpdateUserProfileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -83,6 +84,14 @@ object UserModule {
         userRepository: UserRepository,
     ): GetCurrentUser {
         return GetCurrentUser(userRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideUpdateUserProfileUseCase(
+        userRepository: UserRepository,
+    ): UpdateUserProfileUseCase {
+        return UpdateUserProfileUseCase(userRepository)
     }
 }
 

@@ -1,5 +1,8 @@
 import java.net.URI
 
+include(":domain:mywork")
+
+
 
 
 pluginManagement {

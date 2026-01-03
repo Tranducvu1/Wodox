@@ -67,7 +67,7 @@ class ChatFragment : BaseFragment<FragmentChatLayoutBinding, ChatViewModel>(Chat
                 }
 
                 override fun onMarkDone(notification: Notification) {
-                    viewModel.dispatch(ChatUiAction.MarkNotificationAsRead(notification.id))
+                    viewModel.dispatch(ChatUiAction.MarkNotificationAsRead(notification))
                 }
 
                 override fun onDismiss(notification: Notification) {
@@ -112,7 +112,7 @@ class ChatFragment : BaseFragment<FragmentChatLayoutBinding, ChatViewModel>(Chat
 
 
     private fun setupRecycleViewPeople() {
-        val spacing = resources.getDimensionPixelSize(com.wodox.core.R.dimen.dp_4)
+        val spacing = resources.getDimensionPixelSize(com.wodox.core.R.dimen.dp_2)
 
         binding.rvPeople.apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
@@ -122,7 +122,7 @@ class ChatFragment : BaseFragment<FragmentChatLayoutBinding, ChatViewModel>(Chat
     }
 
     private fun setupRecycleViewChannels() {
-        val spacing = resources.getDimensionPixelSize(com.wodox.core.R.dimen.dp_4)
+        val spacing = resources.getDimensionPixelSize(com.wodox.core.R.dimen.dp_2)
 
         binding.rvChannels.apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)

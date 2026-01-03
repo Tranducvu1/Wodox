@@ -5,6 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.wodox.common.util.PromptUtils
@@ -22,6 +23,7 @@ import com.wodox.domain.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.tasks.await
 import java.util.Date
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -38,14 +40,29 @@ class TaskRepositoryImpl @Inject constructor(
     private val gson: Gson
 ) : TaskRepository {
 
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val tasksCollection = firestore.collection("tasks")
+
     override suspend fun save(task: Task): Task? {
         return try {
+            val calculatedPriority = calculatePriority(task)
+
             val entity = mapper.mapToEntity(task).apply {
                 this.updatedAt = Date()
+                this.calculatedPriority = calculatedPriority
             }
+
             dao.save(entity)
+
+            saveTaskToFirestore(task.copy(calculatedPriority = calculatedPriority))
+
             val savedTask = mapper.mapToDomain(entity)
-            savedTask.copy(calculatedPriority = calculatePriority(savedTask))
+            Log.d(
+                "TaskRepository",
+                "✅ Saved task '${savedTask.title}' with priority: $calculatedPriority (Local + Firestore)"
+            )
+
+            savedTask.copy(calculatedPriority = calculatedPriority)
         } catch (e: Exception) {
             Log.e("TaskRepository", "Error saving task: ${e.message}", e)
             null
@@ -56,8 +73,7 @@ class TaskRepositoryImpl @Inject constructor(
         return try {
             val entity = dao.getTaskById(id)
             entity?.let {
-                val task = mapper.mapToDomain(it)
-                task.copy(calculatedPriority = calculatePriority(task))
+                mapper.mapToDomain(it)
             }
         } catch (e: Exception) {
             Log.e("TaskRepository", "Error getting task: ${e.message}", e)
@@ -68,12 +84,9 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTask(): Flow<List<Task>> {
         return dao.getAllTasks().map { entities ->
             val tasks = mapper.mapToDomainList(entities)
-            tasks.map { task ->
-                task.copy(calculatedPriority = calculatePriority(task))
-            }.sortedByDescending { it.calculatedPriority }
+            tasks.sortedByDescending { it.calculatedPriority }
         }
     }
-
 
     override fun getTaskCalendar(): Flow<List<Task>> {
         return dao.getAllTasks().map { entities ->
@@ -101,6 +114,15 @@ class TaskRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAllTasksByUserId(userId: UUID): Flow<List<Task>> {
+        return dao.getTasksNotificationByUserId(userId).map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            tasks.map { task ->
+                task.copy(calculatedPriority = calculatePriority(task))
+            }
+        }
+    }
+
     override fun getAllTaskByUserID(ownerId: UUID): Flow<PagingData<Task>> {
         Log.d("TaskRepository", "🔵 getAllTaskByUserID called for ownerId: $ownerId")
 
@@ -110,21 +132,17 @@ class TaskRepositoryImpl @Inject constructor(
                 prefetchDistance = 2,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { dao.getTasksForUser(ownerId) }
+            pagingSourceFactory = { dao.getTasksForUserByPriority(ownerId) }
         ).flow.map { pagingData ->
-            Log.d("TaskRepository", "📦 Received pagingData from DAO")
+            Log.d("TaskRepository", "📦 Received pagingData from DAO (sorted by calculatedPriority)")
 
             pagingData.map { entity ->
                 val task = mapper.mapToDomain(entity)
-                val taskWithPriority = task.copy(calculatedPriority = calculatePriority(task))
-
-                Log.d("TaskRepository",
-                    "📄 Task: '${taskWithPriority.title}' | Priority: %.2f".format(taskWithPriority.calculatedPriority)
+                Log.d(
+                    "TaskRepository",
+                    "📄 Task: '${task.title}' | Priority: %.2f".format(task.calculatedPriority)
                 )
-
-                taskWithPriority
-            }.also { processedData ->
-                Log.d("TaskRepository", "✅ All tasks processed with priority calculated")
+                task
             }
         }
     }
@@ -136,11 +154,10 @@ class TaskRepositoryImpl @Inject constructor(
                 prefetchDistance = 2,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { dao.getTaskFavouritePaging(ownerId) }
+            pagingSourceFactory = { dao.getTaskFavouritePagingByPriority(ownerId) }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
-                val task = mapper.mapToDomain(entity)
-                task.copy(calculatedPriority = calculatePriority(task))
+                mapper.mapToDomain(entity)
             }
         }
     }
@@ -238,10 +255,7 @@ class TaskRepositoryImpl @Inject constructor(
                 insights = aiResult.insights
             )
 
-            Log.d(
-                "TaskRepository",
-                "🎯 Analysis complete: ${result.suggestedLevel.displayName} (${result.skillScore})"
-            )
+            Log.d("TaskRepository", "🎯 Analysis complete: ${result.suggestedLevel.displayName}")
             result
 
         } catch (e: Exception) {
@@ -258,25 +272,16 @@ class TaskRepositoryImpl @Inject constructor(
         return try {
             Log.d("TaskRepository", "═══════════════════════════════════════")
             Log.d("TaskRepository", "🔍 Getting suggested supporters...")
-            Log.d("TaskRepository", "═══════════════════════════════════════")
-            Log.d("TaskRepository", "📋 Task Requirements:")
             Log.d(
                 "TaskRepository",
-                "   • Difficulty: ${taskDifficulty.displayName} (${taskDifficulty.value})"
-            )
-            Log.d(
-                "TaskRepository",
-                "   • Priority: ${taskPriority.displayName} (${taskPriority.value})"
+                "📋 Task Requirements: Difficulty=${taskDifficulty.displayName}, Priority=${taskPriority.displayName}"
             )
 
-            val acceptedFriends = userFriendRepository.getAcceptedFriends(currentUserId)
-                .first()
-
+            val acceptedFriends = userFriendRepository.getAcceptedFriends(currentUserId).first()
             Log.d("TaskRepository", "👥 Found ${acceptedFriends.size} accepted friends")
 
             if (acceptedFriends.isEmpty()) {
                 Log.w("TaskRepository", "⚠️ No friends found")
-                Log.d("TaskRepository", "═══════════════════════════════════════")
                 return emptyList()
             }
 
@@ -286,58 +291,28 @@ class TaskRepositoryImpl @Inject constructor(
                 } else {
                     friendRelation.userId
                 }
-                val user = userRepository.getUserById(friendId)
-                if (user != null) {
-                    Log.d(
-                        "TaskRepository",
-                        "   ✓ Found friend: ${user.name} (${user.skillLevel.displayName})"
-                    )
-                } else {
-                    Log.w("TaskRepository", "   ✗ Could not load user: $friendId")
-                }
-                user
+                userRepository.getUserById(friendId)
             }
 
             Log.d("TaskRepository", "📊 Total friend users loaded: ${friendUsers.size}")
 
             val requiredLevel = calculateRequiredSkillLevel(taskDifficulty, taskPriority)
-            Log.d("TaskRepository", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
             Log.d("TaskRepository", "🎯 Required Skill Level: ${requiredLevel.displayName}")
-            Log.d("TaskRepository", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
             val suitableSupporters = friendUsers
-                .filter { user ->
-                    val isQualified = user.skillLevel >= requiredLevel
-                    Log.d(
-                        "TaskRepository",
-                        "   ${if (isQualified) "✅" else "❌"} ${user.name}: ${user.skillLevel.displayName} ${if (isQualified) ">=" else "<"} ${requiredLevel.displayName}"
-                    )
-                    isQualified
-                }
+                .filter { it.skillLevel >= requiredLevel }
                 .sortedByDescending { it.skillLevel }
 
-            Log.d("TaskRepository", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
             Log.d(
                 "TaskRepository",
                 "✅ Final Result: ${suitableSupporters.size} suitable supporters"
             )
-            if (suitableSupporters.isNotEmpty()) {
-                suitableSupporters.forEachIndexed { index, user ->
-                    Log.d(
-                        "TaskRepository",
-                        "   ${index + 1}. ${user.name} - ${user.skillLevel.displayName}"
-                    )
-                }
-            } else {
-                Log.d("TaskRepository", "   No supporters meet the required skill level")
-            }
             Log.d("TaskRepository", "═══════════════════════════════════════")
 
             suitableSupporters
 
         } catch (e: Exception) {
             Log.e("TaskRepository", "❌ Error getting supporters", e)
-            Log.d("TaskRepository", "═══════════════════════════════════════")
             emptyList()
         }
     }
@@ -371,6 +346,179 @@ class TaskRepositoryImpl @Inject constructor(
             Log.e("TaskRepository", "Error deleting chats by task: ${e.message}", e)
         }
     }
+
+    override fun getTasksByStatus(status: TaskStatus): Flow<List<Task>> {
+        return dao.getAllTasks().map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            tasks.filter { it.status == status }
+                .sortedByDescending { it.calculatedPriority }
+        }
+    }
+
+    override fun getCompletedTasks(): Flow<List<Task>> {
+        return dao.getAllTasks().map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            tasks.filter { it.status == TaskStatus.DONE }
+                .sortedByDescending { it.updatedAt }
+        }
+    }
+
+    override fun getPendingTasks(): Flow<List<Task>> {
+        return dao.getAllTasks().map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            tasks.filter {
+                it.status == TaskStatus.TODO || it.status == TaskStatus.IN_PROGRESS
+            }
+                .sortedByDescending { it.calculatedPriority }
+        }
+    }
+
+    override fun getOverdueTasks(): Flow<List<Task>> {
+        return dao.getAllTasks().map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            val now = System.currentTimeMillis()
+            tasks.filter { task ->
+                task.dueAt?.time?.let { it < now } == true &&
+                        task.status != TaskStatus.DONE
+            }
+                .sortedBy { it.dueAt?.time ?: Long.MAX_VALUE }
+        }
+    }
+
+    override fun getTasksByPriority(priority: Priority): Flow<List<Task>> {
+        return dao.getAllTasks().map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            tasks.filter { it.priority == priority }
+                .sortedByDescending { it.calculatedPriority }
+        }
+    }
+
+    override fun getTasksSortedByDate(): Flow<List<Task>> {
+        return dao.getAllTasks().map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            tasks.sortedBy { task ->
+                task.dueAt?.time ?: Long.MAX_VALUE
+            }
+        }
+    }
+
+    override fun getTasksSortedByPriority(): Flow<List<Task>> {
+        return dao.getAllTasks().map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            tasks.sortedByDescending { task ->
+                task.priority.value
+            }
+        }
+    }
+
+    override fun getTasksSortedByName(): Flow<List<Task>> {
+        return dao.getAllTasks().map { entities ->
+            val tasks = mapper.mapToDomainList(entities)
+            tasks.sortedBy { task ->
+                task.title
+            }
+        }
+    }
+
+    private suspend fun saveTaskToFirestore(task: Task): Boolean {
+        return try {
+            val taskData = mapOf(
+                "id" to task.id.toString(),
+                "ownerId" to task.ownerId.toString(),
+                "title" to task.title,
+                "description" to task.description,
+                "status" to task.status.name,
+                "priority" to task.priority.value,
+                "difficulty" to task.difficulty.value,
+                "support" to task.support.value,
+                "startAt" to task.startAt,
+                "dueAt" to task.dueAt,
+                "isFavourite" to task.isFavourite,
+                "createdAt" to task.createdAt,
+                "updatedAt" to task.updatedAt,
+                "deletedAt" to task.deletedAt,
+                "assignedUserIds" to task.assignedUserIds.map { it.toString() },
+                "calculatedPriority" to task.calculatedPriority // ✅ SAVE THIS
+            )
+
+            tasksCollection.document(task.id.toString()).set(taskData).await()
+
+            Log.d("TaskRepository", "✅ Task saved to Firestore: ${task.title}")
+            true
+        } catch (e: Exception) {
+            Log.e("TaskRepository", "❌ Error saving task to Firestore: ${e.message}", e)
+            false
+        }
+    }
+
+    suspend fun loadTasksFromFirestore(userId: UUID): List<Task> {
+        return try {
+            Log.d("TaskRepository", "📥 Loading tasks from Firestore for userId: $userId")
+
+            val snapshot = tasksCollection
+                .whereEqualTo("ownerId", userId.toString())
+                .get()
+                .await()
+
+            val tasks = snapshot.documents.mapNotNull { doc ->
+                try {
+                    val id = UUID.fromString(doc.getString("id") ?: return@mapNotNull null)
+                    val ownerId = UUID.fromString(doc.getString("ownerId") ?: return@mapNotNull null)
+
+                    Task(
+                        id = id,
+                        ownerId = ownerId,
+                        title = doc.getString("title") ?: "",
+                        description = doc.getString("description"),
+                        status = TaskStatus.valueOf(doc.getString("status") ?: "TODO"),
+                        priority = Priority.fromValue(doc.getLong("priority")?.toInt() ?: 1),
+                        difficulty = Difficulty.fromValue(doc.getLong("difficulty")?.toInt() ?: 1),
+                        support = SupportLevel.fromValue(doc.getLong("support")?.toInt() ?: 0),
+                        startAt = doc.getTimestamp("startAt")?.toDate(),
+                        dueAt = doc.getTimestamp("dueAt")?.toDate(),
+                        isFavourite = doc.getBoolean("isFavourite") ?: false,
+                        createdAt = doc.getTimestamp("createdAt")?.toDate() ?: Date(),
+                        updatedAt = doc.getTimestamp("updatedAt")?.toDate() ?: Date(),
+                        deletedAt = doc.getTimestamp("deletedAt")?.toDate(),
+                        assignedUserIds = (doc.get("assignedUserIds") as? List<*>)
+                            ?.mapNotNull { UUID.fromString(it as? String) } ?: emptyList(),
+                        calculatedPriority = doc.getDouble("calculatedPriority") ?: 0.0 // ✅ LOAD THIS
+                    )
+                } catch (e: Exception) {
+                    Log.e("TaskRepository", "Error parsing task from Firestore", e)
+                    null
+                }
+            }
+
+            Log.d("TaskRepository", "✅ Loaded ${tasks.size} tasks from Firestore")
+
+            // ✅ Lưu vào Local DB để sync
+            tasks.forEach { task ->
+                val entity = mapper.mapToEntity(task)
+                dao.save(entity)
+            }
+
+            tasks
+        } catch (e: Exception) {
+            Log.e("TaskRepository", "❌ Error loading tasks from Firestore: ${e.message}", e)
+            emptyList()
+        }
+    }
+
+    // ✅ NEW: Sync tasks - khi user mở app, load từ Firestore
+    suspend fun syncTasksFromFirestore(userId: UUID) {
+        try {
+            Log.d("TaskRepository", "🔄 Syncing tasks from Firestore...")
+            loadTasksFromFirestore(userId)
+            Log.d("TaskRepository", "✅ Tasks synced from Firestore")
+        } catch (e: Exception) {
+            Log.e("TaskRepository", "❌ Error syncing tasks: ${e.message}", e)
+        }
+    }
+
+    // ============================================================
+    // PRIVATE HELPER FUNCTIONS
+    // ============================================================
 
     private fun calculateTaskStatistics(tasks: List<Task>): TaskStatistics {
         val completedTasks = tasks.filter { it.status == TaskStatus.DONE }
@@ -419,13 +567,11 @@ class TaskRepositoryImpl @Inject constructor(
                 throw Exception("Empty response")
             }
 
-            // Clean response
             val cleanJson = aiResponse
                 .replace("```json", "")
                 .replace("```", "")
                 .trim()
                 .let { json ->
-                    // Find JSON object
                     val start = json.indexOf('{')
                     val end = json.lastIndexOf('}')
                     if (start != -1 && end != -1 && end > start) {
@@ -438,7 +584,6 @@ class TaskRepositoryImpl @Inject constructor(
             Log.d("TaskRepository", "🧹 Clean JSON: $cleanJson")
 
             val result = gson.fromJson(cleanJson, AIAnalysisResponse::class.java)
-
             require(result.skillScore in 0.0..10.0) { "Invalid score: ${result.skillScore}" }
             require(result.insights.isNotEmpty()) { "No insights" }
 
@@ -510,11 +655,9 @@ class TaskRepositoryImpl @Inject constructor(
     private fun calculatePriority(task: Task): Double {
         val tag = "PriorityCalc"
 
-        // 1️⃣ User priority
         val userPriorityScore = task.priority.value * 0.30
         Log.d(tag, "UserPriority: ${task.priority.value} * 0.30 = $userPriorityScore")
 
-        // 2️⃣ Deadline
         val deadlineScore = task.dueAt?.let { dueDate ->
             val diffMillis = dueDate.time - System.currentTimeMillis()
             val daysLeft = TimeUnit.MILLISECONDS.toDays(diffMillis).toInt()
@@ -531,11 +674,7 @@ class TaskRepositoryImpl @Inject constructor(
                 else -> 1.5
             }
 
-            Log.d(
-                tag,
-                "Deadline: dueAt=${dueDate.time}, daysLeft=$daysLeft → score=$score"
-            )
-
+            Log.d(tag, "Deadline: daysLeft=$daysLeft → score=$score")
             score
         } ?: run {
             Log.d(tag, "Deadline: no due date → score=0.0")
@@ -545,18 +684,14 @@ class TaskRepositoryImpl @Inject constructor(
         val deadlineWeighted = deadlineScore * 0.40
         Log.d(tag, "DeadlineWeighted: $deadlineScore * 0.40 = $deadlineWeighted")
 
-        // 3️⃣ Difficulty
         val difficultyScore = task.difficulty.value * 0.15
         Log.d(tag, "Difficulty: ${task.difficulty.value} * 0.15 = $difficultyScore")
 
-        // 4️⃣ Dependency
         val rawDependencyScore = calculateDependencyScore(task)
         val dependencyScore = rawDependencyScore * 0.15
         Log.d(tag, "Dependency: $rawDependencyScore * 0.15 = $dependencyScore")
 
-        // 5️⃣ Total
-        val total =
-            userPriorityScore + deadlineWeighted + difficultyScore + dependencyScore
+        val total = userPriorityScore + deadlineWeighted + difficultyScore + dependencyScore
 
         Log.d(
             tag,
@@ -575,7 +710,6 @@ class TaskRepositoryImpl @Inject constructor(
 
         return total
     }
-
 
     private fun calculateDependencyScore(task: Task): Double {
         var score = 5.0

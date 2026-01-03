@@ -8,7 +8,7 @@ data class SharedDocumentEntity(
     val ownerUserId: String = "",
     val ownerUserName: String = "",
     val ownerUserEmail: String = "",
-    val invitedUsers: List<InvitedUser> = emptyList(),
+    val invitedUsers: List<Map<String, Any>> = emptyList(),
     val invitedUserIds: List<String> = emptyList(),
     val htmlContent: String = "",
     val sharedAt: Long = 0L,

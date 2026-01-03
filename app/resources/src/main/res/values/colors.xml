@@ -114,4 +114,14 @@
     <color name="support_medium">#2196F3</color>
     <color name="support_high">#4CAF50</color>
     <color name="support_critical">#8BC34A</color>
+
+    <color name="color_editing_highlight">#FFF3E0</color>
+    <color name="color_editing_bubble">#FFE0B2</color>
+    <color name="primary_light">#E3F2FD</color>
+    <color name="card_background">#F5F5F5</color>
+    <color name="primary_container">#E3F2FD</color>
+    <color name="secondary_container">#FFF3E0</color>
+    <color name="tertiary_container">#F3E5F5</color>
+    <color name="secondary_color">#FF6F00</color>
+    <color name="tertiary_color">#7B1FA2</color>
 </resources>

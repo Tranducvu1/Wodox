@@ -4,9 +4,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.wodox.calendar.ui.CalendarFragment
-import com.wodox.docs.ui.DocsFragment
+import com.wodox.docs.ui.docdetail.DocsDetailActivity
+import com.wodox.docs.ui.docs.DocsFragment
 import com.wodox.ui.home.HomeFragment
-import com.wodox.mywork.ui.MyWorkFragment
 import com.wodox.ui.favourite.FavouriteFragment
 
 class MainTopPagerAdapter(

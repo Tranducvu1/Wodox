@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +20,7 @@ import com.wodox.chat.databinding.ActivityMessageBinding
 import com.wodox.chat.databinding.BottomSheetAttachmentBinding
 import com.wodox.chat.databinding.BottomSheetEmojiPickerBinding
 import com.wodox.chat.databinding.BottomSheetMessageMenuBinding
+import com.wodox.chat.databinding.BottomSheetSearchMessagesBinding
 import com.wodox.core.base.activity.BaseActivity
 import com.wodox.core.extension.addSpaceDecoration
 import com.wodox.core.extension.debounceClick
@@ -37,6 +39,7 @@ class MessageActivity :
     private var emojiBottomSheet: BottomSheetDialog? = null
     private var attachmentBottomSheet: BottomSheetDialog? = null
     private var menuBottomSheet: BottomSheetDialog? = null
+    private var searchBottomSheet: BottomSheetDialog? = null
 
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -92,10 +95,7 @@ class MessageActivity :
 
             etMessage.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
+                    s: CharSequence?, start: Int, count: Int, after: Int
                 ) {
                 }
 
@@ -139,9 +139,7 @@ class MessageActivity :
             setHasFixedSize(true)
             itemAnimator = null
             layoutManager = LinearLayoutManager(
-                context,
-                RecyclerView.VERTICAL,
-                false
+                context, RecyclerView.VERTICAL, false
             )
             adapter = adapterMessage
             addSpaceDecoration(spacing, false)
@@ -210,11 +208,13 @@ class MessageActivity :
         adapterMessage = UserMessageAdapter()
     }
 
+    // ============= MESSAGE MENU =============
     private fun showMessageMenu() {
         if (menuBottomSheet == null) {
             menuBottomSheet = BottomSheetDialog(this).apply {
                 val bottomSheetBinding = BottomSheetMessageMenuBinding.inflate(layoutInflater)
                 setContentView(bottomSheetBinding.root)
+
                 bottomSheetBinding.btnSearch.setOnClickListener {
                     dismiss()
                     showSearchDialog()
@@ -249,28 +249,51 @@ class MessageActivity :
     }
 
     private fun showSearchDialog() {
-        val builder = AlertDialog.Builder(this)
-        val input = android.widget.EditText(this).apply {
-            hint = "Search messages..."
-            setPadding(50, 30, 50, 30)
+        if (searchBottomSheet == null) {
+            searchBottomSheet = BottomSheetDialog(this).apply {
+                val binding = BottomSheetSearchMessagesBinding.inflate(layoutInflater)
+                setContentView(binding.root)
+
+                binding.etSearch.requestFocus()
+                window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+
+                binding.btnCloseSearch.debounceClick {
+                    dismiss()
+                }
+
+                binding.btnCancelSearch.debounceClick {
+                    dismiss()
+                }
+
+                binding.btnSearch.debounceClick {
+                    performSearch(binding)
+                }
+
+                binding.etSearch.setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        performSearch(binding)
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+        }
+        searchBottomSheet?.show()
+    }
+
+    private fun performSearch(binding: BottomSheetSearchMessagesBinding) {
+        val query = binding.etSearch.text.toString().trim()
+
+        if (query.isEmpty()) {
+            binding.etSearch.error = "Please enter search text"
+            return
         }
 
-        builder.setTitle("Search Messages")
-            .setView(input)
-            .setPositiveButton("Search") { dialog, _ ->
-                val query = input.text.toString().trim()
-                if (query.isNotEmpty()) {
-                    viewModel.dispatch(MessageUiAction.SearchMessages(query))
-                    toast("Searching for: $query")
-                } else {
-                    toast("Please enter search text")
-                }
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.cancel()
-            }
-            .show()
+        binding.etSearch.error = null
+        viewModel.dispatch(MessageUiAction.SearchMessages(query))
+        searchBottomSheet?.dismiss()
+        toast("🔍 Searching for: \"$query\"")
     }
 
     private fun showMediaGallery() {
@@ -291,21 +314,16 @@ class MessageActivity :
             }
         }.toTypedArray()
 
-        AlertDialog.Builder(this)
-            .setTitle("Media & Files (${mediaMessages.size})")
+        AlertDialog.Builder(this).setTitle("Media & Files (${mediaMessages.size})")
             .setItems(mediaList) { _, which ->
                 toast("Selected: ${mediaList[which]}")
-            }
-            .setNegativeButton("Close") { dialog, _ ->
+            }.setNegativeButton("Close") { dialog, _ ->
                 dialog.dismiss()
-            }
-            .show()
+            }.show()
     }
 
     private fun toggleMuteNotifications() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Mute Notifications")
-            .setMessage("Choose mute duration:")
+        AlertDialog.Builder(this).setTitle("Mute Notifications").setMessage("Choose mute duration:")
             .setItems(arrayOf("1 hour", "8 hours", "1 week", "Forever")) { dialog, which ->
                 val duration = when (which) {
                     0 -> "1 hour"
@@ -315,42 +333,34 @@ class MessageActivity :
                 }
                 toast("Notifications muted for $duration")
                 dialog.dismiss()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            }.setNegativeButton("Cancel") { dialog, _ ->
                 dialog.cancel()
-            }
-            .show()
+            }.show()
     }
 
     private fun showClearChatConfirmation() {
-        AlertDialog.Builder(this)
-            .setTitle("Clear Chat History")
+        AlertDialog.Builder(this).setTitle("Clear Chat History")
             .setMessage("Are you sure you want to clear all messages?\nThis action cannot be undone.")
             .setPositiveButton("Clear") { dialog, _ ->
                 viewModel.dispatch(MessageUiAction.ClearMessages)
                 dialog.dismiss()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            }.setNegativeButton("Cancel") { dialog, _ ->
                 dialog.cancel()
-            }
-            .show()
+            }.show()
     }
 
     private fun showBlockUserConfirmation() {
         val friendName = viewModel.uiState.value.friend?.name ?: "this user"
 
-        AlertDialog.Builder(this)
-            .setTitle("Block User")
+        AlertDialog.Builder(this).setTitle("Block User")
             .setMessage("Are you sure you want to block $friendName?\nYou won't receive messages from them anymore.")
             .setPositiveButton("Block") { dialog, _ ->
                 toast("$friendName has been blocked")
                 dialog.dismiss()
                 finish()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            }.setNegativeButton("Cancel") { dialog, _ ->
                 dialog.cancel()
-            }
-            .show()
+            }.show()
     }
 
     private fun formatTimestamp(timestamp: Long): String {
@@ -358,7 +368,6 @@ class MessageActivity :
         return sdf.format(java.util.Date(timestamp))
     }
 
-    // ============= EMOJI PICKER =============
     private fun showEmojiPicker() {
         if (emojiBottomSheet == null) {
             emojiBottomSheet = BottomSheetDialog(this).apply {
@@ -385,7 +394,6 @@ class MessageActivity :
         binding.etMessage.setSelection(cursorPosition + emoji.length)
     }
 
-    // ============= ATTACHMENT OPTIONS =============
     private fun showAttachmentOptions() {
         if (attachmentBottomSheet == null) {
             attachmentBottomSheet = BottomSheetDialog(this).apply {
@@ -416,45 +424,35 @@ class MessageActivity :
     }
 
     private fun openCamera() {
-        PermissionX.init(this)
-            .permissions(Manifest.permission.CAMERA)
-            .request { allGranted, _, _ ->
-                if (allGranted) {
-                    ImagePicker.with(this)
-                        .cameraOnly()
-                        .compress(1024)
-                        .maxResultSize(1080, 1080)
-                        .createIntent { intent ->
-                            imagePickerLauncher.launch(intent)
-                        }
-                } else {
-                    toast("Camera permission required")
-                }
+        PermissionX.init(this).permissions(Manifest.permission.CAMERA).request { allGranted, _, _ ->
+            if (allGranted) {
+                ImagePicker.with(this).cameraOnly().compress(1024).maxResultSize(1080, 1080)
+                    .createIntent { intent ->
+                        imagePickerLauncher.launch(intent)
+                    }
+            } else {
+                toast("Camera permission required")
             }
+        }
     }
 
     private fun openGallery() {
-        PermissionX.init(this)
-            .permissions(
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    Manifest.permission.READ_MEDIA_IMAGES
-                } else {
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                }
-            )
-            .request { allGranted, _, _ ->
-                if (allGranted) {
-                    ImagePicker.with(this)
-                        .galleryOnly()
-                        .compress(1024)
-                        .maxResultSize(1080, 1080)
-                        .createIntent { intent ->
-                            imagePickerLauncher.launch(intent)
-                        }
-                } else {
-                    toast("Storage permission required")
-                }
+        PermissionX.init(this).permissions(
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
             }
+        ).request { allGranted, _, _ ->
+            if (allGranted) {
+                ImagePicker.with(this).galleryOnly().compress(1024).maxResultSize(1080, 1080)
+                    .createIntent { intent ->
+                        imagePickerLauncher.launch(intent)
+                    }
+            } else {
+                toast("Storage permission required")
+            }
+        }
     }
 
     private fun openDocumentPicker() {
@@ -507,6 +505,7 @@ class MessageActivity :
         emojiBottomSheet?.dismiss()
         attachmentBottomSheet?.dismiss()
         menuBottomSheet?.dismiss()
+        searchBottomSheet?.dismiss()
         super.onDestroy()
     }
 }

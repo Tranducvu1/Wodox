@@ -9,8 +9,8 @@ import java.util.UUID
 
 class GetCheckListByTaskIdUseCase(
     private val repository: CheckListRepository
-) : BaseParamsFlowUnsafeUseCase<UUID, List<CheckList>>() {
-    override suspend fun execute(params: UUID): Flow<List<CheckList>> {
+) : BaseParamsFlowUnsafeUseCase<String, List<CheckList>>() {
+    override suspend fun execute(params: String): Flow<List<CheckList>> {
         return repository.getAllCheckListByTaskID(params)
     }
 }

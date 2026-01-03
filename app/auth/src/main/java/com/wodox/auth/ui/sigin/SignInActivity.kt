@@ -20,7 +20,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignInActivity : BaseActivity<ActivtySignInOutLayoutBinding, SignUpViewModel>(
-    SignUpViewModel::class) {
+    SignUpViewModel::class
+) {
     @Inject
     lateinit var mainNavigator: MainNavigator
 

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="ViewModel"
             type="com.wodox.ui.task.taskdetail.activitytask.ActivityTaskViewModel" />
@@ -9,7 +12,42 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/editModeIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E3F2FD"
+            android:padding="@dimen/dp_8"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivEditIcon"
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:src="@drawable/ic_edit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/primary" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:text="Editing comment"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/sp_13"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivEditIcon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottomCommentBar"
@@ -17,7 +55,24 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:padding="@dimen/dp_12"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/editModeIndicator">
+
+            <TextView
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_44"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_12"
+                android:paddingEnd="@dimen/dp_12"
+                android:text="Cancel"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/sp_14"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtComment"
@@ -33,9 +88,10 @@
                 android:textColorHint="@color/gray1F1F1F"
                 android:textSize="@dimen/sp_14"
                 app:layout_constraintEnd_toStartOf="@id/btnToggleFormat"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnCancel"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- Format Options (Horizontal Scroll) -->
             <HorizontalScrollView
                 android:id="@+id/llFormatOptions"
                 android:layout_width="0dp"
@@ -45,7 +101,8 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edtComment">
+                app:layout_constraintTop_toBottomOf="@id/edtComment"
+                tools:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -135,6 +192,7 @@
 
             </HorizontalScrollView>
 
+            <!-- Toggle Format Button -->
             <ImageView
                 android:id="@+id/btnToggleFormat"
                 android:layout_width="@dimen/dp_44"

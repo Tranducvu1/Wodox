@@ -5,7 +5,7 @@ import java.util.UUID
 data class SharedDocument(
     val documentId: String,
     val documentTitle: String,
-    val ownerUserId: UUID,
+    val ownerUserId: String,
     val ownerUserName: String,
     val ownerUserEmail: String,
     val invitedUsers: List<InvitedUser> = emptyList(),

@@ -18,7 +18,8 @@ import com.wodox.main.databinding.ItemProfileLayoutBinding
 
 class ProfileAdapter(
     private val context: Context?,
-    private val listener: OnItemClickListener
+    private val listener: OnItemClickListener,
+    private var isNotificationEnabled: Boolean = false
 ) : TMVVMAdapter<Item>(ArrayList()) {
 
     interface OnItemClickListener {
@@ -54,6 +55,12 @@ class ProfileAdapter(
         binding.executePendingBindings()
     }
 
+    fun updateNotificationState(enabled: Boolean) {
+        isNotificationEnabled = enabled
+        notifyDataSetChanged()
+    }
+
+
     private fun setAttachmentIcon(imageView: ImageView, item: Item) {
         context?.let { ctx ->
             when (item.type) {
@@ -73,9 +80,14 @@ class ProfileAdapter(
                 }
 
                 ItemTypeProfile.MUTE -> {
+                    val iconRes = if (isNotificationEnabled) {
+                        com.wodox.resources.R.drawable.ic_notification_on
+                    } else {
+                        com.wodox.resources.R.drawable.ic_notification_mute
+                    }
                     setIconWithColor(
                         imageView,
-                        com.wodox.resources.R.drawable.ic_notification_mute,
+                        iconRes,
                         "#00BFA5".toColorInt()
                     )
                 }

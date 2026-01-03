@@ -101,6 +101,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Project modules
+    implementation(project(":domain:mywork"))
+    implementation(project(":domain:chat"))
     implementation(project(":domain:user"))
     implementation(project(":app:common"))
     implementation(project(":app:resources"))

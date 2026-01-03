@@ -9,27 +9,32 @@ import com.wodox.domain.home.repository.TaskAssignRepository
 import com.wodox.domain.home.repository.TaskRepository
 import com.wodox.domain.home.repository.UserFriendRepository
 import com.wodox.domain.home.usecase.AddFriendUseCase
-import com.wodox.domain.home.usecase.AnalyzeUserTasksUseCase
+import com.wodox.domain.home.usecase.task.AnalyzeUserTasksUseCase
+import com.wodox.domain.home.usecase.log.DeleteAllLogsByTaskIdUseCase
+import com.wodox.domain.home.usecase.log.DeleteLogUseCase
 import com.wodox.domain.home.usecase.taskassign.AssignUserToTaskUseCase
 import com.wodox.domain.home.usecase.FindRelationUseCase
+//import com.wodox.domain.home.usecase.GetTaskByDateUseCase
 import com.wodox.domain.home.usecase.GetAllItemUseCase
-import com.wodox.domain.home.usecase.GetAllLogUseCase
+import com.wodox.domain.home.usecase.log.GetAllLogUseCase
+import com.wodox.domain.home.usecase.log.GetAllLogsByTaskIdUseCase
 import com.wodox.domain.home.usecase.GetAllMenuOptionUseCase
 import com.wodox.domain.home.usecase.task.GetAllTaskFavourite
-import com.wodox.domain.home.usecase.GetAllTaskUseCase
+import com.wodox.domain.home.usecase.task.GetAllTaskUseCase
+import com.wodox.domain.home.usecase.task.GetAllTasksByUserUseCase
 import com.wodox.domain.home.usecase.GetAttachmentUseCase
 import com.wodox.domain.home.usecase.GetFriendAcceptUseCase
 import com.wodox.domain.home.usecase.GetFriendByUseCase
 import com.wodox.domain.home.usecase.GetFriendRequestUseCase
 import com.wodox.domain.home.usecase.GetFriendSentUseCase
 import com.wodox.domain.home.usecase.GetSuggestedSupportersUseCase
-import com.wodox.domain.home.usecase.GetTaskByTaskIdUseCase
-import com.wodox.domain.home.usecase.GetTaskCalendarUseCase
+import com.wodox.domain.home.usecase.task.GetTaskByTaskIdUseCase
+import com.wodox.domain.home.usecase.task.GetTaskCalendarUseCase
 import com.wodox.domain.home.usecase.taskassign.GetTaskAssignByTaskId
-import com.wodox.domain.home.usecase.GetTaskUseCase
+import com.wodox.domain.home.usecase.task.GetTaskUseCase
 import com.wodox.domain.home.usecase.SaveAttachmentUseCase
-import com.wodox.domain.home.usecase.SaveLogUseCase
-import com.wodox.domain.home.usecase.SaveTaskUseCase
+import com.wodox.domain.home.usecase.log.SaveLogUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
 import com.wodox.domain.home.usecase.aichat.DeleteAllChatsByTaskUseCase
 import com.wodox.domain.home.usecase.aichat.DeleteChatHistoryUseCase
 import com.wodox.domain.home.usecase.aichat.GetChatsByTaskIdUseCase
@@ -44,6 +49,13 @@ import com.wodox.domain.home.usecase.comment.SaveCommentUseCase
 import com.wodox.domain.home.usecase.subtask.GetAllSubTaskByTaskIdUseCase
 import com.wodox.domain.home.usecase.subtask.SaveSubTaskUseCase
 import com.wodox.domain.home.usecase.task.AskAIUseCase
+import com.wodox.domain.home.usecase.task.GetCompletedTasksUseCase
+import com.wodox.domain.home.usecase.task.GetOverdueTasksUseCase
+import com.wodox.domain.home.usecase.task.GetPendingTasksUseCase
+import com.wodox.domain.home.usecase.task.GetTasksByPriorityUseCase
+import com.wodox.domain.home.usecase.task.GetTasksByStatusUseCase
+import com.wodox.domain.home.usecase.task.GetTasksSortedByNameUseCase
+import com.wodox.domain.home.usecase.task.GetTasksSortedByPriorityUseCase
 import com.wodox.domain.home.usecase.taskassign.GetTaskAssignByUserIdUseCase
 import dagger.Module
 import dagger.Provides
@@ -64,6 +76,14 @@ object HomeUseCaseModule {
         return GetAllTaskUseCase(taskRepository)
     }
 
+//    @Provides
+//    @Singleton
+//    fun provideGetTaskByDateUseCase(
+//        taskRepository: TaskRepository,
+//    ): GetTaskByDateUseCase {
+//        return GetTaskByDateUseCase(taskRepository)
+//    }
+
     @Provides
     @Singleton
     fun provideSaveTaskUseCase(
@@ -78,6 +98,15 @@ object HomeUseCaseModule {
         taskRepository: TaskRepository,
     ): GetAllTaskFavourite {
         return GetAllTaskFavourite(taskRepository)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideGetAllTasksByUserUseCase(
+        taskRepository: TaskRepository,
+    ): GetAllTasksByUserUseCase {
+        return GetAllTasksByUserUseCase(taskRepository)
     }
 
     @Provides
@@ -352,6 +381,88 @@ object HomeUseCaseModule {
         taskRepository: TaskRepository
     ): DeleteAllChatsByTaskUseCase {
         return DeleteAllChatsByTaskUseCase(taskRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllLogsByTaskIdUseCase(
+        logRepository: LogRepository,
+    ): GetAllLogsByTaskIdUseCase {
+        return GetAllLogsByTaskIdUseCase(logRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteLogUseCase(
+        logRepository: LogRepository,
+    ): DeleteLogUseCase {
+        return DeleteLogUseCase(logRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteAllLogsByTaskIdUseCase(
+        logRepository: LogRepository,
+    ): DeleteAllLogsByTaskIdUseCase {
+        return DeleteAllLogsByTaskIdUseCase(logRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTasksByStatusUseCase(
+        taskRepository: TaskRepository,
+    ): GetTasksByStatusUseCase {
+        return GetTasksByStatusUseCase(taskRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCompletedTasksUseCase(
+        taskRepository: TaskRepository,
+    ): GetCompletedTasksUseCase {
+        return GetCompletedTasksUseCase(taskRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetPendingTasksUseCase(
+        taskRepository: TaskRepository,
+    ): GetPendingTasksUseCase {
+        return GetPendingTasksUseCase(taskRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetOverdueTasksUseCase(
+        taskRepository: TaskRepository,
+    ): GetOverdueTasksUseCase {
+        return GetOverdueTasksUseCase(taskRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTasksByPriorityUseCase(
+        taskRepository: TaskRepository,
+    ): GetTasksByPriorityUseCase {
+        return GetTasksByPriorityUseCase(taskRepository)
+    }
+
+
+
+    @Provides
+    @Singleton
+    fun provideGetTasksSortedByPriorityUseCase(
+        taskRepository: TaskRepository,
+    ): GetTasksSortedByPriorityUseCase {
+        return GetTasksSortedByPriorityUseCase(taskRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTasksSortedByNameUseCase(
+        taskRepository: TaskRepository,
+    ): GetTasksSortedByNameUseCase {
+        return GetTasksSortedByNameUseCase(taskRepository)
     }
 
 }

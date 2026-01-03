@@ -6,8 +6,9 @@ import com.wodox.core.base.viewmodel.BaseUiStateViewModel
 import com.wodox.core.extension.serializable
 import com.wodox.domain.home.model.local.MenuOption
 import com.wodox.domain.home.model.local.Task
+import com.wodox.domain.home.usecase.log.DeleteAllLogsByTaskIdUseCase
 import com.wodox.domain.home.usecase.GetAllMenuOptionUseCase
-import com.wodox.domain.home.usecase.SaveTaskUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
 import com.wodox.domain.user.usecase.GetUserUseCase
 import com.wodox.model.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +27,7 @@ class OptionMenuUiViewModel @Inject constructor(
     private val getAllMenuOptionUseCase: GetAllMenuOptionUseCase,
     private val saveTaskUseCase: SaveTaskUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val deleteAllLogsByTaskIdUseCase: DeleteAllLogsByTaskIdUseCase,
 ) : BaseUiStateViewModel<OptionMenuUiState, OptionMenuUiEvent, OptionMenuUiAction>(app) {
     override fun initialState(): OptionMenuUiState = OptionMenuUiState()
 
@@ -57,6 +59,7 @@ class OptionMenuUiViewModel @Inject constructor(
             val userId = getUserUseCase() ?: return@launch
             if (deleteTaskUpdate.ownerId != userId) return@launch
             saveTaskUseCase(deleteTaskUpdate)
+            deleteAllLogsByTaskIdUseCase(taskId.id)
             sendEvent(OptionMenuUiEvent.DeleteSuccess)
         }
     }

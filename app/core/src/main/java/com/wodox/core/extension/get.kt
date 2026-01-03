@@ -1,4 +1,4 @@
-package com.osprey.core.extension
+package com.wodox.core.extension
 
 
 import android.content.SharedPreferences

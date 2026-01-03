@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.wodox.docs.ui.docdetail.DocsDetailViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_secondary">
+
+        <!-- Toolbar -->
+        <LinearLayout
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="@color/white"
+            android:elevation="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"
+                android:padding="12dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/icon_primary" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/etDocTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:hint="Untitled document"
+                    android:maxLines="1"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvLastSaved"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="All changes saved"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivOpenFromDrive"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_folder_open"
+                app:tint="@color/icon_secondary" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivSave"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_cloud_upload"
+                app:tint="@color/colorPrimary" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivShare"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_share"
+                app:tint="@color/icon_secondary" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivMore"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_more_vert"
+                app:tint="@color/icon_secondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llEditingTools"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorF5F5F5"
+            android:elevation="2dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <HorizontalScrollView
+                android:id="@+id/formattingToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="8dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                    <!-- Undo/Redo -->
+                    <ImageView
+                        android:id="@+id/ivUndo"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Undo"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_undo"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivRedo"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Redo"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_redo"
+                        app:tint="@color/icon_primary" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/border_color" />
+
+                    <!-- Text Formatting -->
+                    <ImageView
+                        android:id="@+id/ivBold"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Bold"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_bold"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivItalic"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Italic"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_italic"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivUnderline"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Underline"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_underlined"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivStrikethrough"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Strikethrough"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_strikethrough"
+                        app:tint="@color/icon_primary" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/border_color" />
+
+                    <!-- Media -->
+                    <ImageView
+                        android:id="@+id/ivImage"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Insert image"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_image_picker_docs_image"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivVideo"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Insert video"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_video"
+                        app:tint="@color/icon_primary" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/border_color" />
+
+                    <!-- Style -->
+                    <ImageView
+                        android:id="@+id/ivFont"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Font family"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_font"
+                        app:tint="@color/icon_primary" />
+
+                    <TextView
+                        android:id="@+id/tvNumber"
+                        android:layout_width="48dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:gravity="center"
+                        android:text="16"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivTextColor"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Text color"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_color_fill"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivHighlight"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Highlight"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_color_text"
+                        app:tint="@color/icon_primary" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/border_color" />
+
+                    <!-- Alignment -->
+                    <ImageView
+                        android:id="@+id/ivAlignLeft"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Align left"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_align_left"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivAlignCenter"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Align center"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_align_center"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivAlignRight"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Align right"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_align_right"
+                        app:tint="@color/icon_primary" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/border_color" />
+
+                    <!-- Lists -->
+                    <ImageView
+                        android:id="@+id/ivBulletList"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Bullet list"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_list_bulleted"
+                        app:tint="@color/icon_primary" />
+
+                    <ImageView
+                        android:id="@+id/ivNumberList"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Numbered list"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_format_list_numbered"
+                        app:tint="@color/icon_primary" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Text Size Popup -->
+            <com.wodox.common.view.colorpicker.TextSizePopupView
+                android:id="@+id/tvTextSize"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_number_picker"
+                android:elevation="12dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Shared Users Section -->
+        <LinearLayout
+            android:id="@+id/llInvitedUsers"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorE3F2FD"
+            android:elevation="1dp"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llEditingTools"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="Shared users"
+                    android:src="@drawable/ic_people"
+                    app:tint="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="Shared with"
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvInvitedUsers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:orientation="horizontal" />
+        </LinearLayout>
+
+        <!-- Main Content -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llInvitedUsers">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <com.wodox.docs.extention.MyRichEditor
+                    android:id="@+id/richEditor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_editor"
+                    android:clipToOutline="true"
+                    android:elevation="1dp"
+                    android:minHeight="500dp"
+                    android:padding="16dp" />
+            </FrameLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <FrameLayout
+            android:id="@+id/flLoading"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/blackAlpha60"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

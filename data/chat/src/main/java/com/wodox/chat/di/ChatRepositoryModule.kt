@@ -31,7 +31,6 @@ object ChatRepositoryModule {
         dao: NotificationDao,
     ): NotificationRepository {
         return NotificationRepositoryImpl(
-            dao = dao,
             mapper = mapper
         )
     }
@@ -40,24 +39,20 @@ object ChatRepositoryModule {
     @Provides
     fun provideChatRepository(
         mapper: MessageChatMapper,
-        dao: MessageDao,
     ): ChatRepository {
         return ChatRepositoryImpl(
             messageChatMapper = mapper,
-            messageDao = dao
         )
     }
 
     @Provides
     @Singleton
     fun provideChannelRepository(
-        channelDao: ChannelDao,
         channelMapper: ChannelMapper,
         channelMemberMapper: ChannelMemberMapper,
         channelMessageMapper: ChannelMessageMapper
     ): ChannelRepository {
         return ChannelRepositoryImpl(
-            channelDao,
             channelMapper,
             channelMemberMapper,
             channelMessageMapper

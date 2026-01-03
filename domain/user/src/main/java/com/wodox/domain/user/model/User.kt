@@ -17,4 +17,6 @@ data class User(
     var updatedAt: Date = Date(),
     var skillLevel: SkillLevel = SkillLevel.FRESHER,
     var deletedAt: Date? = null,
+    var bio :String? = "",
+    var phone :String?= ""
 ): Parcelable

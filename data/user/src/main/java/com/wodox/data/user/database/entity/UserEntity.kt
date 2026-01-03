@@ -15,6 +15,8 @@ data class UserEntity(
     var id: String = UUID.randomUUID().toString(),
     var email: String = "",
     var password: String = "",
+    var bio: String? ="",
+    var phone: String? ="",
     var name: String = "",
     var avatar: String = "",
     var isActive: Boolean = false,

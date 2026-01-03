@@ -16,5 +16,12 @@ interface CommentRepository {
 
     suspend fun getLatestUnreadComment(userId: UUID): Flow<Comment?>
 
+
+    suspend fun updateComment(commentId: UUID, newContent: String): Boolean
+
+
+    suspend fun getCommentCountByTaskId(taskId: UUID): Int
+
+    suspend fun getLatestCommentByTaskId(taskId: UUID): Comment?
 }
 

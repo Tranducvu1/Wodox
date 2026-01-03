@@ -13,42 +13,56 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/dp_6"
-
-        app:cardCornerRadius="@dimen/dp_12"
-        app:cardElevation="@dimen/dp_1"
-
-        app:cardUseCompatPadding="true"
-        app:strokeColor="#2E86C1"
-
-        app:strokeWidth="1dp">
+        android:layout_marginVertical="@dimen/dp_8"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="@dimen/dp_20"
+        app:cardElevation="@dimen/dp_4"
+        app:cardUseCompatPadding="false"
+        app:strokeWidth="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/dp_16">
+            android:paddingStart="@dimen/dp_20"
+            android:paddingTop="@dimen/dp_18"
+            android:paddingEnd="@dimen/dp_20"
+            android:paddingBottom="@dimen/dp_18">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivAttachmentIcon"
-                android:layout_width="@dimen/dp_48"
-                android:layout_height="@dimen/dp_48"
-                android:layout_gravity="center"
-                android:background="@drawable/bg_icon_container"
-                android:scaleType="centerInside"
+            <FrameLayout
+                android:id="@+id/iconWrapper"
+                android:layout_width="@dimen/dp_64"
+                android:layout_height="@dimen/dp_64"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_add" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_icon_modern_gradient" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivAttachmentIcon"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="@dimen/dp_32"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    tools:src="@drawable/ic_add"
+                    tools:tint="@android:color/white" />
+            </FrameLayout>
+
+            <LinearLayout
                 android:id="@+id/contentLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_12"
+                android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginEnd="@dimen/dp_12"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/ivAttachmentIcon"
+                app:layout_constraintEnd_toStartOf="@id/arrowIcon"
+                app:layout_constraintStart_toEndOf="@id/iconWrapper"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
@@ -56,15 +70,39 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/nunito_semi_bold"
+                    android:letterSpacing="0.005"
+                    android:lineSpacingExtra="@dimen/dp_3"
                     android:maxLines="2"
                     android:text="@{itemTask.name}"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/sp_15"
-                    tools:text="Important Document File Name.pdf" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                    android:textColor="#1A1A1A"
+                    android:textSize="@dimen/sp_17"
+                    tools:text="Important Document File Name" />
+
+                <TextView
+                    android:id="@+id/tvItemSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_6"
+                    android:fontFamily="@font/nunito_bold"
+                    android:textColor="#8E8E93"
+                    android:textSize="@dimen/sp_14"
+                    android:visibility="gone"
+                    tools:text="Tap to open"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/arrowIcon"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:alpha="0.35"
+                android:src="@drawable/ic_chevron_right"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="#1A1A1A" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </com.google.android.material.card.MaterialCardView>
 </layout>

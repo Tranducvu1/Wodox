@@ -43,7 +43,7 @@ class TaskMapper @Inject constructor() :
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
             deletedAt = entity.deletedAt,
-            calculatedPriority = 0.0
+            calculatedPriority = entity.calculatedPriority
         )
     }
 
@@ -65,7 +65,8 @@ class TaskMapper @Inject constructor() :
                 .joinToString(",") { it.toString() },
             createdAt = domain.createdAt,
             updatedAt = domain.updatedAt,
-            deletedAt = domain.deletedAt
+            deletedAt = domain.deletedAt,
+            calculatedPriority = domain.calculatedPriority
         )
     }
 }

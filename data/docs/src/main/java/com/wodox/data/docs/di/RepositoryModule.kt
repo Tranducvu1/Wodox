@@ -18,9 +18,8 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideSharedDocumentRepository(
-        @ApplicationContext context: Context,
         mapper: SharedDocumentMapper
     ): SharedDocumentRepository {
-        return SharedDocumentRepositoryImpl(context,mapper)
+        return SharedDocumentRepositoryImpl(mapper)
     }
 }

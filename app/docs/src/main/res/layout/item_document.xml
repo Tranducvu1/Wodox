@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/llDocument"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/ivDocIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Document icon"
+                android:src="@drawable/ic_document"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/primary" />
+
+            <TextView
+                android:id="@+id/tvDocTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/ivDelete"
+                app:layout_constraintStart_toEndOf="@id/ivDocIcon"
+                app:layout_constraintTop_toTopOf="@id/ivDocIcon"
+                tools:text="My Document Title" />
+
+            <TextView
+                android:id="@+id/tvOwnerInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/gray1F1F1F"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/tvDocTitle"
+                app:layout_constraintStart_toStartOf="@id/tvDocTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvDocTitle"
+                tools:text="Shared by John Doe" />
+
+            <TextView
+                android:id="@+id/tvLastModified"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/gray1F1F1F"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="@id/tvOwnerInfo"
+                app:layout_constraintStart_toStartOf="@id/tvOwnerInfo"
+                app:layout_constraintTop_toBottomOf="@id/tvOwnerInfo"
+                tools:text="Modified 2 hours ago" />
+
+            <ImageView
+                android:id="@+id/ivDelete"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Delete document"
+                android:padding="4dp"
+                android:src="@drawable/ic_delete_draw"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

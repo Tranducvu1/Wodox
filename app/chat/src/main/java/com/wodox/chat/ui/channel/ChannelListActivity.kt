@@ -15,6 +15,7 @@ import com.wodox.chat.databinding.DialogCreateChannelBinding
 import com.wodox.common.navigation.ChatNavigator
 import com.wodox.core.base.activity.BaseActivity
 import com.wodox.core.extension.debounceClick
+import com.wodox.core.extension.gone
 import com.wodox.core.extension.launchWhenStarted
 import com.wodox.core.extension.show
 import com.wodox.core.extension.toast
@@ -140,7 +141,7 @@ class ChannelListActivity :
         if (currentQuery.isNotEmpty()) {
             binding.etSearch.setText(currentQuery)
             binding.etSearch.setSelection(currentQuery.length)
-            binding.btnClearText.visibility = android.view.View.VISIBLE
+            binding.btnClearText.show()
         }
 
         binding.etSearch.requestFocus()
@@ -150,11 +151,7 @@ class ChannelListActivity :
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                binding.btnClearText.visibility = if (s.isNullOrEmpty()) {
-                    android.view.View.GONE
-                } else {
-                    android.view.View.VISIBLE
-                }
+                binding.btnClearText.gone(s.isNullOrEmpty())
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -222,7 +219,7 @@ class ChannelListActivity :
                 val isPrivate = switchPrivate.isChecked
 
                 if (name.isEmpty()) {
-                    tilChannelName.error = "Channel name is required"
+                    etChannelName.error = "Channel name is required"
                     return@debounceClick
                 }
 
@@ -265,15 +262,15 @@ class ChannelListActivity :
             viewModel.uiEvent.collect { event ->
                 when (event) {
                     is ChannelListUiEvent.ChannelCreated -> {
-                        toast("✅ Channel '${event.channel.name}' created successfully")
+                        toast("Channel '${event.channel.name}' created successfully")
                     }
 
                     is ChannelListUiEvent.ChannelJoined -> {
-                        toast("✅ Joined channel successfully!")
+                        toast("Joined channel successfully!")
                     }
 
                     is ChannelListUiEvent.ChannelLeft -> {
-                        toast("👋 Left channel")
+                        toast("Left channel")
                     }
 
                     is ChannelListUiEvent.Error -> {

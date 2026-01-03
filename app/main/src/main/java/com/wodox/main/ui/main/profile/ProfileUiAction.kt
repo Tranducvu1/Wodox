@@ -2,4 +2,6 @@ package com.wodox.main.ui.main.profile
 
 sealed class ProfileUiAction {
     object SignOut : ProfileUiAction()
+
+    data class ToggleNotification(val enabled: Boolean) : ProfileUiAction()
 }

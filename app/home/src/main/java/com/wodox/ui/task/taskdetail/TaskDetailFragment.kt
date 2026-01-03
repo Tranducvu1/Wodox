@@ -2,6 +2,7 @@ package com.wodox.ui.task.taskdetail
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
@@ -56,6 +57,8 @@ import com.wodox.core.extension.showAllowingStateLoss
 import com.wodox.core.extension.toArrayList
 import com.wodox.core.extension.toast
 import com.wodox.core.util.hideKeyboard
+import com.wodox.domain.user.model.User
+import com.wodox.ui.notification.manager.NotificationPermissionHelper
 import com.wodox.ui.task.taskdetail.createtask.CreateTaskUiAction
 import com.wodox.ui.task.taskdetail.createtask.CreateTaskUiEvent
 import com.wodox.ui.task.userbottomsheet.ListUserBottomSheet
@@ -80,7 +83,7 @@ class TaskDetailFragment : BaseFragment<FragmentTaskDetailLayoutBinding, TaskDet
             context,
             object : AttachmentsAdapter.OnItemClickListener {
                 override fun onAttachmentClick(attachment: Attachment) {
-                    //openAttachment(attachment)
+                    openAttachment(attachment)
                 }
 
                 override fun onDeleteClick(attachment: Attachment) {
@@ -215,29 +218,53 @@ class TaskDetailFragment : BaseFragment<FragmentTaskDetailLayoutBinding, TaskDet
         } else {
             viewModel.currentTask.value?.description
         }
+        NotificationPermissionHelper.requestNotificationPermission(requireActivity())
     }
 
-    private fun setupInitialPriority() {
-        val priority = viewModel.currentTask.value?.priority ?: 0
-        val menus = TaskMenuUtil.getItemMenusPriority(requireContext())
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        val selectedMenu = menus.find {
-            when (it.type.name) {
-                "LOW" -> priority == 1
-                "NORMAL" -> priority == 2
-                "HIGH" -> priority == 3
-                else -> false
+        if (requestCode == NotificationPermissionHelper.NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                android.util.Log.d("TaskDetailFragment", "✅ Notification permission granted")
+            } else {
+                android.util.Log.d("TaskDetailFragment", "❌ Notification permission denied")
             }
         }
+    }
 
-        if (selectedMenu != null) {
-            binding.llItemMenuPriority.show()
-            binding.tvPrioritySelected.text = getString(selectedMenu.nameResId)
-            binding.imgPriorityIcon.setImageResource(selectedMenu.iconResId)
-            selectedMenu.tintColor?.let {
-                binding.imgPriorityIcon.imageTintList = ColorStateList.valueOf(it)
-            } ?: run {
-                binding.imgPriorityIcon.imageTintList = null
+
+    private fun setupInitialPriority() {
+        val priority = viewModel.currentTask.value?.priority?.value ?: 0
+
+        if (priority > 0) {
+            val menus = TaskMenuUtil.getItemMenusPriority(requireContext())
+
+            val selectedMenu = menus.find {
+                when (it.type.name) {
+                    "LOW" -> priority == 1
+                    "NORMAL" -> priority == 2
+                    "HIGH" -> priority == 3
+                    else -> false
+                }
+            }
+
+            if (selectedMenu != null) {
+                binding.llItemMenuPriority.show()
+                binding.tvPrioritySelected.text = getString(selectedMenu.nameResId)
+                binding.imgPriorityIcon.setImageResource(selectedMenu.iconResId)
+                selectedMenu.tintColor?.let {
+                    binding.imgPriorityIcon.imageTintList = ColorStateList.valueOf(it)
+                } ?: run {
+                    binding.imgPriorityIcon.imageTintList = null
+                }
+            } else {
+                binding.llItemMenuPriority.gone()
             }
         } else {
             binding.llItemMenuPriority.gone()
@@ -246,6 +273,36 @@ class TaskDetailFragment : BaseFragment<FragmentTaskDetailLayoutBinding, TaskDet
 
     private fun setupInitialDifficulty() {
         val difficulty = viewModel.currentTask.value?.difficulty
+        if (difficulty != null && difficulty.name != "NORMAL") {
+            val menus = TaskMenuUtil.getItemMenusDifficulty(requireContext())
+
+            val selectedMenu = menus.find { it.type.name == difficulty.name }
+
+            if (selectedMenu != null) {
+                binding.llItemMenuDifficulty.show()
+
+                binding.tvDifficultySelected.text = getString(selectedMenu.nameResId)
+                binding.imgDifficultyIcon.setImageResource(selectedMenu.iconResId)
+
+                selectedMenu.tintColor?.let {
+                    binding.imgDifficultyIcon.imageTintList = ColorStateList.valueOf(it)
+                } ?: run {
+                    binding.imgDifficultyIcon.imageTintList = null
+                }
+
+                selectedDifficulty = when (difficulty.name) {
+                    "VERY_EASY" -> 1
+                    "EASY" -> 2
+                    "NORMAL" -> 3
+                    "HARD" -> 5
+                    "VERY_HARD" -> 7
+                    "EXPERT" -> 10
+                    else -> 3
+                }
+            }
+        } else {
+            binding.llItemMenuDifficulty.gone()
+        }
         binding.tvDifficulty.text = getDifficultyText(difficulty)
     }
 
@@ -382,7 +439,10 @@ class TaskDetailFragment : BaseFragment<FragmentTaskDetailLayoutBinding, TaskDet
                                 else -> 3
                             }
                             this@TaskDetailFragment.viewModel.dispatch(
-                                TaskDetailUiAction.UpdateDifficulty(selectedDifficulty, menu.type.name)
+                                TaskDetailUiAction.UpdateDifficulty(
+                                    selectedDifficulty,
+                                    menu.type.name
+                                )
                             )
                         }
                     })
@@ -447,8 +507,12 @@ class TaskDetailFragment : BaseFragment<FragmentTaskDetailLayoutBinding, TaskDet
                     TaskDetailUiEvent.DeleteSuccess -> requireContext().toast("Delete Successfully")
                     TaskDetailUiEvent.UpdateSuccess -> handleUpdateTitleSuccess()
                     TaskDetailUiEvent.AssignSuccess -> handelUpdateSuccessFully()
-                    is TaskDetailUiEvent.AnalysisComplete -> requireContext().toast("Assign Successfully")
-                    is TaskDetailUiEvent.Error ->   requireContext().toast(event.message)
+                    is TaskDetailUiEvent.AnalysisComplete -> {
+                        requireContext().toast("Analysis complete! Support level updated")
+                        setupInitialSupport()
+                    }
+
+                    is TaskDetailUiEvent.Error -> requireContext().toast(event.message)
                 }
             }
         }
@@ -456,7 +520,23 @@ class TaskDetailFragment : BaseFragment<FragmentTaskDetailLayoutBinding, TaskDet
         launchWhenStarted {
             viewModel.uiState.collect {
                 filterSubTasks(currentSearchQuery)
+                updateAssignedUserUI(it.user)
             }
+        }
+
+        viewModel.currentTask.observe(viewLifecycleOwner) { task ->
+            task?.let {
+                setupInitialSupport()
+            }
+        }
+    }
+
+    private fun updateAssignedUserUI(user: User?) {
+        user?.let {
+            binding.tvSupport.text = it.name
+            binding.tvSupport.show()
+        } ?: run {
+            binding.tvSupport.gone()
         }
     }
 

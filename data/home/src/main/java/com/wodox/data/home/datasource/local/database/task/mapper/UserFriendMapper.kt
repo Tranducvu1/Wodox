@@ -1,35 +1,42 @@
 package com.wodox.data.home.datasource.local.database.task.mapper
 
-
-import com.wodox.base.base.AbstractMapper
 import com.wodox.data.home.datasource.local.database.task.entity.UserFriendEntity
+import com.wodox.domain.home.model.local.FriendStatus
 import com.wodox.domain.home.model.local.UserFriend
+import java.util.UUID
 import javax.inject.Inject
 
-class UserFriendMapper @Inject constructor() :
-    AbstractMapper<UserFriendEntity, UserFriend>() {
+class UserFriendMapper @Inject constructor() {
 
-    override fun mapToDomain(entity: UserFriendEntity): UserFriend {
+    fun mapToDomain(entity: UserFriendEntity): UserFriend {
         return UserFriend(
-            id = entity.id,
-            userId = entity.userId,
-            friendId = entity.friendId,
-            status = entity.status,
+            id = UUID.fromString(entity.id),
+            userId = UUID.fromString(entity.userId),
+            friendId = UUID.fromString(entity.friendId),
+            status = FriendStatus.valueOf(entity.status),
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
             deletedAt = entity.deletedAt
         )
     }
 
-    override fun mapToEntity(domain: UserFriend): UserFriendEntity {
+    fun mapToEntity(domain: UserFriend): UserFriendEntity {
         return UserFriendEntity(
-            id = domain.id,
-            userId = domain.userId,
-            friendId = domain.friendId,
-            status = domain.status,
+            id = domain.id.toString(),
+            userId = domain.userId.toString(),
+            friendId = domain.friendId.toString(),
+            status = domain.status.name,
             createdAt = domain.createdAt,
             updatedAt = domain.updatedAt,
             deletedAt = domain.deletedAt
         )
+    }
+
+    fun mapToDomainList(entities: List<UserFriendEntity>): List<UserFriend> {
+        return entities.map { mapToDomain(it) }
+    }
+
+    fun mapToEntityList(domains: List<UserFriend>): List<UserFriendEntity> {
+        return domains.map { mapToEntity(it) }
     }
 }
