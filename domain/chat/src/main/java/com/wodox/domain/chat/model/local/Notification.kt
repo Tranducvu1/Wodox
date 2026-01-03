@@ -1,6 +1,5 @@
 package com.wodox.domain.chat.model.local
 
-import com.wodox.chat.model.local.NotificationActionType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -34,6 +33,8 @@ data class Notification(
             NotificationActionType.MENTIONED -> "$fromUserName mentioned you"
             NotificationActionType.COMPLETED -> "$fromUserName completed the task"
             NotificationActionType.COMMENTED -> "$fromUserName commented on task"
+            NotificationActionType.DEADLINE_REMINDER -> "$fromUserName deadline reminder on task"
+            NotificationActionType.MAKE_FRIEND -> "$fromUserName sent you a friend request" // ← THÊM
         }
 
     fun getTimeAgoString(timestamp: Long): String {

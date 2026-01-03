@@ -3,17 +3,24 @@ package com.wodox.mywork.ui
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.wodox.core.base.fragment.BaseFragment
 import com.wodox.core.extension.addSpaceDecoration
 import com.wodox.core.extension.launchWhenStarted
-import com.wodox.domain.home.model.local.Comment
+import com.wodox.domain.home.model.local.TaskStatus
+import com.wodox.domain.mywork.TaskSortType
+import com.wodox.domain.mywork.TaskViewType
 import com.wodox.mywork.R
+import com.wodox.mywork.databinding.DialogFilterOptionBinding
+import com.wodox.mywork.databinding.DialogSettingsMenuBinding
+import com.wodox.mywork.databinding.DialogSortOptionBinding
 import com.wodox.mywork.databinding.MyWorkFragmentLayoutBinding
 import com.wodox.mywork.model.DayItem
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
+import java.util.UUID
 
 @AndroidEntryPoint
 class MyWorkFragment : BaseFragment<MyWorkFragmentLayoutBinding, MyWorkViewModel>(
@@ -41,28 +48,194 @@ class MyWorkFragment : BaseFragment<MyWorkFragmentLayoutBinding, MyWorkViewModel
     private fun setupUI() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
-        observe()
+        setupSettingsButton()
+        observeUiState()
+        observeUiEvent()
     }
 
-    private fun observe() {
-        launchWhenStarted {
-            viewModel.allTasks.collect { list ->
-                adapterPagingTask.updateList(list)
-            }
+    private fun setupSettingsButton() {
+        binding.btnSettings.setOnClickListener {
+            showSettingsMenu()
+        }
+    }
+
+    private fun showSettingsMenu() {
+
+        val binding = DialogSettingsMenuBinding.inflate(layoutInflater)
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Options")
+            .setView(binding.root)
+            .create()
+
+        binding.cardFilter.setOnClickListener {
+            dialog.dismiss()
+            showFilterOptions()
         }
 
+        binding.cardSort.setOnClickListener {
+            dialog.dismiss()
+            showSortOptions()
+        }
+
+        binding.cardReminder.setOnClickListener {
+            dialog.dismiss()
+            showSendReminderDialog()
+        }
+
+        dialog.show()
+    }
+
+    private fun showFilterOptions() {
+        val binding = DialogFilterOptionBinding.inflate(layoutInflater)
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Filter Tasks")
+            .setView(binding.root)
+            .create()
+
+        binding.optionAll.setOnClickListener {
+            binding.radioAll.isChecked = true
+            viewModel.handleAction(MyWorkUiAction.FilterByStatus(null))
+            dialog.dismiss()
+        }
+
+        binding.optionCompleted.setOnClickListener {
+            binding.radioCompleted.isChecked = true
+            viewModel.handleAction(
+                MyWorkUiAction.FilterByStatus(TaskStatus.DONE)
+            )
+            dialog.dismiss()
+        }
+
+        binding.optionToDo.setOnClickListener {
+            binding.radioToDo.isChecked = true
+            viewModel.handleAction(
+                MyWorkUiAction.FilterByStatus(TaskStatus.TODO)
+            )
+            dialog.dismiss()
+        }
+
+        binding.optionInProgress.setOnClickListener {
+            binding.radioInProgress.isChecked = true
+            viewModel.handleAction(
+                MyWorkUiAction.FilterByStatus(TaskStatus.IN_PROGRESS)
+            )
+            dialog.dismiss()
+        }
+
+        binding.optionBlocked.setOnClickListener {
+            binding.radioBlocked.isChecked = true
+            viewModel.handleAction(
+                MyWorkUiAction.FilterByStatus(TaskStatus.BLOCKED)
+            )
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun showSortOptions() {
+        val binding = DialogSortOptionBinding.inflate(layoutInflater)
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Sort Tasks")
+            .setView(binding.root)
+            .create()
+
+        binding.optionDueDate.setOnClickListener {
+            binding.radioDueDate.isChecked = true
+            viewModel.handleAction(
+                MyWorkUiAction.SortTasks(TaskSortType.BY_DATE)
+            )
+            dialog.dismiss()
+        }
+
+        binding.optionPriority.setOnClickListener {
+            binding.radioPriority.isChecked = true
+            viewModel.handleAction(
+                MyWorkUiAction.SortTasks(TaskSortType.BY_PRIORITY)
+            )
+            dialog.dismiss()
+        }
+
+        binding.optionName.setOnClickListener {
+            binding.radioName.isChecked = true
+            viewModel.handleAction(
+                MyWorkUiAction.SortTasks(TaskSortType.BY_NAME)
+            )
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+
+    private fun showSendReminderDialog() {
+        val tasks = viewModel.uiState.value.tasks
+        val task = tasks.firstOrNull() ?: run {
+            showMessage("No tasks available to send reminders")
+            return
+        }
+
+        val dialog = SendReminderDialogFragment.newInstance(
+            task.id,
+            task.title
+        )
+        dialog.show(childFragmentManager, "SendReminderDialog")
+    }
+
+    private fun observeUiState() {
         launchWhenStarted {
-            viewModel.latestComment.collect { comment ->
-                if (comment != null) {
-                    showCommentNotification(comment)
+            viewModel.uiState.collect { state ->
+                adapterPagingTask.updateList(state.tasks)
+
+                if (state.latestComment != null) {
+                    showCommentNotification(state.latestComment)
                 } else {
                     hideCommentNotification()
+                }
+
+                if (state.error != null) {
+                    showError(state.error)
                 }
             }
         }
     }
 
-    private fun showCommentNotification(comment: Comment) {
+    private fun observeUiEvent() {
+        launchWhenStarted {
+            viewModel.uiEvent.collect { event ->
+                when (event) {
+                    is MyWorkUiEvent.ShowMessage -> {
+                        showMessage(event.message)
+                    }
+
+                    is MyWorkUiEvent.ShowError -> {
+                        showError(event.error)
+                    }
+
+                    is MyWorkUiEvent.ShowReminderDialog -> {
+                        val dialog = SendReminderDialogFragment.newInstance(
+                            UUID.fromString(event.taskId),
+                            event.taskName
+                        )
+                        dialog.show(childFragmentManager, "SendReminderDialog")
+                    }
+
+                    is MyWorkUiEvent.NotificationSent -> {
+                        showMessage(event.message)
+                    }
+
+                    MyWorkUiEvent.CloseDialog -> {
+                        // Close any open dialogs
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showCommentNotification(comment: com.wodox.domain.home.model.local.Comment) {
         binding.tvCommentNotification.apply {
             visibility = View.VISIBLE
             text = "${comment.userName}: ${comment.content}\n${comment.createdAt}"
@@ -70,7 +243,22 @@ class MyWorkFragment : BaseFragment<MyWorkFragmentLayoutBinding, MyWorkViewModel
     }
 
     private fun hideCommentNotification() {
-        binding.tvCommentNotification?.visibility = View.GONE
+        binding.tvCommentNotification.visibility = View.GONE
+    }
+
+    private fun showMessage(message: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(message)
+            .setPositiveButton("OK") { _, _ -> }
+            .show()
+    }
+
+    private fun showError(error: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Error")
+            .setMessage(error)
+            .setPositiveButton("OK") { _, _ -> }
+            .show()
     }
 
     override fun layoutId(): Int = R.layout.my_work_fragment_layout

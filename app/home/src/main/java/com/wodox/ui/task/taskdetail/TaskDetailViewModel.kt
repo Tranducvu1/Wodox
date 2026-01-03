@@ -5,24 +5,28 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.wodox.chat.model.local.NotificationActionType
+import com.wodox.domain.chat.model.local.NotificationActionType
 import com.wodox.core.base.viewmodel.BaseUiStateViewModel
 import com.wodox.core.extension.serializable
 import com.wodox.domain.chat.model.local.Notification
 import com.wodox.domain.chat.usecase.SaveNotificationUseCase
 import com.wodox.domain.home.model.local.Attachment
 import com.wodox.domain.home.model.local.AttachmentType
+import com.wodox.domain.home.model.local.Difficulty
 import com.wodox.domain.home.model.local.Priority
 import com.wodox.domain.home.model.local.SubTask
 import com.wodox.domain.home.model.local.Task
 import com.wodox.domain.home.model.local.TaskAnalysisResult
 import com.wodox.domain.home.model.local.TaskAssignee
 import com.wodox.domain.home.model.local.TaskStatus
-import com.wodox.domain.home.usecase.AnalyzeUserTasksUseCase
+import com.wodox.domain.home.repository.SettingsRepository
+import com.wodox.domain.home.usecase.task.AnalyzeUserTasksUseCase
 import com.wodox.domain.home.usecase.GetAttachmentUseCase
+import com.wodox.domain.home.usecase.GetSuggestedSupportersUseCase
 import com.wodox.domain.home.usecase.SaveAttachmentUseCase
-import com.wodox.domain.home.usecase.SaveLogUseCase
-import com.wodox.domain.home.usecase.SaveTaskUseCase
+import com.wodox.domain.home.usecase.log.SaveLogUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
+import com.wodox.domain.home.usecase.SuggestedSupportersParams
 import com.wodox.domain.home.usecase.subtask.GetAllSubTaskByTaskIdUseCase
 import com.wodox.domain.home.usecase.subtask.SaveSubTaskUseCase
 import com.wodox.domain.home.usecase.taskassign.AssignUserToTaskUseCase
@@ -32,6 +36,9 @@ import com.wodox.domain.user.usecase.GetUserUseCase
 import com.wodox.model.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -52,7 +59,9 @@ class TaskDetailViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val saveNotificationUseCase: SaveNotificationUseCase,
     private val saveLogUseCase: SaveLogUseCase,
+    private val settingsRepository: SettingsRepository,
     private val analyzeUserTasksUseCase: AnalyzeUserTasksUseCase,
+    private val getSuggestedSupportersUseCase: GetSuggestedSupportersUseCase,
     ) : BaseUiStateViewModel<TaskDetailUiState, TaskDetailUiEvent, TaskDetailUiAction>(app) {
 
     companion object {
@@ -65,6 +74,14 @@ class TaskDetailViewModel @Inject constructor(
 
     val analysisResult = MutableLiveData<TaskAnalysisResult>()
 
+
+    val isNotificationEnabled: StateFlow<Boolean> =
+        settingsRepository.isNotificationEnabled
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                false
+            )
 
     val task by lazy {
         data?.serializable<Task>(Constants.Intents.TASK)
@@ -96,7 +113,10 @@ class TaskDetailViewModel @Inject constructor(
             is TaskDetailUiAction.AssignUser -> assignUserToTask(action.id)
             TaskDetailUiAction.AssignSuccessfully -> loadUserAssign()
             TaskDetailUiAction.AnalyzeUserSkill -> analyzeUserSkill()
-            is TaskDetailUiAction.UpdateDifficulty -> updateDifficulty(action.difficulty,action.difficultyName)
+            is TaskDetailUiAction.UpdateDifficulty -> updateDifficulty(
+                action.difficulty,
+                action.difficultyName
+            )
         }
     }
 
@@ -232,6 +252,7 @@ class TaskDetailViewModel @Inject constructor(
             }
         }
     }
+
     private fun assignUserToTask(userId: UUID) {
         viewModelScope.launch(Dispatchers.IO) {
             val task = currentTask.value ?: return@launch
@@ -316,34 +337,57 @@ class TaskDetailViewModel @Inject constructor(
             updateState { it.copy(isAnalyzing = true) }
 
             try {
+                // 1. Phân tích current user
                 Log.d(TAG, "📡 Calling analyzeUserTasksUseCase...")
                 val analysis = analyzeUserTasksUseCase(userId)
 
                 if (analysis != null) {
-                    Log.d(TAG, "✅ Analysis completed successfully!")
-                    Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-                    Log.d(TAG, "📊 ANALYSIS RESULTS:")
-                    Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-                    Log.d(TAG, "📈 Total Tasks: ${analysis.totalTasks}")
-                    Log.d(TAG, "✅ Completed: ${analysis.completedTasks}")
-                    Log.d(TAG, "⏰ On-Time: ${analysis.onTimeTasks}")
-                    Log.d(TAG, "⏱️ Late: ${analysis.lateTasks}")
-                    Log.d(TAG, "📊 Avg Priority: ${String.format("%.1f", analysis.averagePriority)}")
-                    Log.d(TAG, "📊 Avg Difficulty: ${String.format("%.1f", analysis.averageDifficulty)}")
-                    Log.d(TAG, "⏳ Avg Completion Days: ${String.format("%.1f", analysis.averageCompletionDays)}")
-                    Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-                    Log.d(TAG, "🎯 SKILL ASSESSMENT:")
-                    Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-                    Log.d(TAG, "⭐ Skill Score: ${String.format("%.2f", analysis.skillScore)}/10")
-                    Log.d(TAG, "🏆 Skill Level: ${analysis.suggestedLevel.displayName}")
-                    Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-                    Log.d(TAG, "💡 INSIGHTS:")
-                    analysis.insights.forEachIndexed { index, insight ->
-                        Log.d(TAG, "   ${index + 1}. $insight")
-                    }
-                    Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                    // Log analysis results
+                    logAnalysisResults(analysis)
 
                     analysisResult.postValue(analysis)
+
+                    // 2. Tự động cập nhật support level
+                    val suggestedSupport = calculateSupportLevel(analysis)
+                    Log.d(TAG, "🎯 Suggested Support Level: $suggestedSupport")
+                    updateSupportLevel(suggestedSupport)
+
+                    // 3. 🔥 TÌM VÀ TỰ ĐỘNG ASSIGN USER PHÙ HỢP
+                    val task = currentTask.value
+                    if (task != null) {
+                        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                        Log.d(TAG, "👥 FINDING SUITABLE SUPPORTERS...")
+                        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+                        val supporters = getSuggestedSupportersUseCase(
+                            SuggestedSupportersParams(
+                                taskDifficulty = task.difficulty ,
+                                taskPriority = task.priority,
+                                currentUserId = userId
+                            )
+                        )
+
+                        Log.d(TAG, "✅ Found ${supporters.size} suitable supporters")
+
+                        if (supporters.isNotEmpty()) {
+                            val bestSupporter = supporters.first() // Đã được sort theo skillLevel
+                            Log.d(TAG, "🎯 Best Supporter: ${bestSupporter.name}")
+                            Log.d(TAG, "   📊 Skill Level: ${bestSupporter.skillLevel.displayName}")
+                            Log.d(TAG, "   📧 Email: ${bestSupporter.email}")
+
+                            // Tự động assign user này
+                            assignUserToTask(bestSupporter.id)
+
+                            Log.d(TAG, "✅ Auto-assigned ${bestSupporter.name} to task")
+                        } else {
+                            Log.w(TAG, "⚠️ No suitable supporters found")
+                            withContext(Dispatchers.Main) {
+                                sendEvent(TaskDetailUiEvent.Error("No suitable friends found for this task"))
+                            }
+                        }
+                        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                    }
+
                     updateState { state ->
                         state.copy(
                             userSkillAnalysis = analysis,
@@ -355,7 +399,7 @@ class TaskDetailViewModel @Inject constructor(
                         sendEvent(TaskDetailUiEvent.AnalysisComplete(analysis))
                     }
                 } else {
-                    Log.w(TAG, "⚠️ Analysis returned null - no tasks found or error occurred")
+                    Log.w(TAG, "⚠️ Analysis returned null")
                     updateState { it.copy(isAnalyzing = false) }
                 }
 
@@ -372,11 +416,97 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
+    private fun logAnalysisResults(analysis: TaskAnalysisResult) {
+        Log.d(TAG, "✅ Analysis completed successfully!")
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        Log.d(TAG, "📊 ANALYSIS RESULTS:")
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        Log.d(TAG, "📈 Total Tasks: ${analysis.totalTasks}")
+        Log.d(TAG, "✅ Completed: ${analysis.completedTasks}")
+        Log.d(TAG, "⏰ On-Time: ${analysis.onTimeTasks}")
+        Log.d(TAG, "⏱️ Late: ${analysis.lateTasks}")
+        Log.d(TAG, "📊 Avg Priority: ${String.format("%.1f", analysis.averagePriority)}")
+        Log.d(TAG, "📊 Avg Difficulty: ${String.format("%.1f", analysis.averageDifficulty)}")
+        Log.d(TAG, "⏳ Avg Completion Days: ${String.format("%.1f", analysis.averageCompletionDays)}")
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        Log.d(TAG, "🎯 SKILL ASSESSMENT:")
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        Log.d(TAG, "⭐ Skill Score: ${String.format("%.2f", analysis.skillScore)}/10")
+        Log.d(TAG, "🏆 Skill Level: ${analysis.suggestedLevel.displayName}")
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        Log.d(TAG, "💡 INSIGHTS:")
+        analysis.insights.forEachIndexed { index, insight ->
+            Log.d(TAG, "   ${index + 1}. $insight")
+        }
+        Log.d(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    }
+
+    private fun calculateSupportLevel(analysis: TaskAnalysisResult): String {
+        val skillScore = analysis.skillScore
+        val completionRate = if (analysis.totalTasks > 0) {
+            (analysis.completedTasks.toDouble() / analysis.totalTasks) * 100
+        } else {
+            0.0
+        }
+        val onTimeRate = if (analysis.completedTasks > 0) {
+            (analysis.onTimeTasks.toDouble() / analysis.completedTasks) * 100
+        } else {
+            0.0
+        }
+
+        // Logic xác định mức độ support cần thiết
+        return when {
+            // Skill cao, completion rate cao, on-time rate cao → Không cần support
+            skillScore >= 7.0 && completionRate >= 80 && onTimeRate >= 80 -> {
+                Log.d(TAG, "📊 High performer - No support needed")
+                "NONE"
+            }
+
+            // Skill trung bình, performance ổn → Support thấp
+            skillScore >= 5.0 && completionRate >= 60 && onTimeRate >= 60 -> {
+                Log.d(TAG, "📊 Good performer - Low support needed")
+                "LOW"
+            }
+
+            // Skill thấp hoặc performance kém → Support trung bình
+            skillScore >= 3.0 || completionRate >= 40 || onTimeRate >= 40 -> {
+                Log.d(TAG, "📊 Moderate performer - Medium support needed")
+                "MEDIUM"
+            }
+
+            // Skill rất thấp, performance kém → Support cao
+            else -> {
+                Log.d(TAG, "📊 Low performer - High support needed")
+                "HIGH"
+            }
+        }
+    }
+
+    private suspend fun updateSupportLevel(supportLevel: String) {
+        val task = currentTask.value ?: return
+
+        val supportEnum = try {
+            com.wodox.domain.home.model.local.SupportLevel.valueOf(supportLevel)
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Invalid support level: $supportLevel", e)
+            return
+        }
+
+        val updatedTask = task.copy(support = supportEnum)
+        currentTask.postValue(updatedTask)
+        saveTaskUseCase(updatedTask)
+
+        saveLog(task.id, "Auto-update support level", "Support = $supportLevel (AI suggested)")
+
+        Log.d(TAG, "✅ Support level auto-updated to: $supportLevel")
+    }
+
     private fun updateDifficulty(difficulty: Int, difficultyName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val task = currentTask.value ?: return@launch
 
-            val difficultyEnum = com.wodox.domain.home.model.local.Difficulty.valueOf(difficultyName)
+            val difficultyEnum =
+                com.wodox.domain.home.model.local.Difficulty.valueOf(difficultyName)
 
             val updatedTask = task.copy(difficulty = difficultyEnum)
             currentTask.postValue(updatedTask)

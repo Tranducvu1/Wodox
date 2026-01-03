@@ -123,6 +123,7 @@ dependencies {
     implementation(project(":app:mywork"))
     implementation(project(":app:resources"))
     implementation(project(":domain:chat"))
+    implementation(project(":domain:mywork"))
     implementation(project(":domain:main"))
     implementation(project(":domain:remote"))
     implementation(project(":domain:asset"))

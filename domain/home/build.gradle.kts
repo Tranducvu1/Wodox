@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.eventbus)
     implementation(project(":domain:user"))
     implementation(project(":app:resources"))
+    implementation(project(":app:core"))
     implementation(project(":config"))
     implementation(project(":domain:base"))
 

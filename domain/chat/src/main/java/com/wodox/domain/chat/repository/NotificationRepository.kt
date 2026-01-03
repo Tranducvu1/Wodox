@@ -24,4 +24,6 @@ interface NotificationRepository {
 
     suspend fun updateAll(notifications: List<Notification>)
 
+
+
 }

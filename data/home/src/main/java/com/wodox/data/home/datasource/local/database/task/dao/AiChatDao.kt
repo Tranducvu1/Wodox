@@ -34,4 +34,5 @@ interface AiChatDao {
 
     @Query("DELETE FROM ai_chats")
     suspend fun deleteAll()
+
 }

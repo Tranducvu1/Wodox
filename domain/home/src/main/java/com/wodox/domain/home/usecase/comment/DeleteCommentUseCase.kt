@@ -8,7 +8,6 @@ import javax.inject.Inject
 class DeleteCommentUseCase @Inject constructor(
     private val repository: CommentRepository
 ) : BaseParamsUnsafeUseCase<UUID, Unit>() {
-
     override suspend fun execute(params: UUID) {
         repository.deleteComment(params)
     }

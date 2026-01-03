@@ -6,10 +6,12 @@ import com.wodox.core.base.viewmodel.BaseUiStateViewModel
 import com.wodox.core.extension.serializable
 import com.wodox.domain.home.model.local.Comment
 import com.wodox.domain.home.model.local.Task
-import com.wodox.domain.home.usecase.GetAllLogUseCase
+import com.wodox.domain.home.usecase.log.GetAllLogUseCase
 import com.wodox.domain.home.usecase.comment.DeleteCommentUseCase
 import com.wodox.domain.home.usecase.comment.GetAllCommentByTaskIdUseCase
 import com.wodox.domain.home.usecase.comment.SaveCommentUseCase
+import com.wodox.domain.home.usecase.comment.UpdateCommentParams
+import com.wodox.domain.home.usecase.comment.UpdateCommentUseCase
 import com.wodox.domain.user.usecase.GetCurrentUserEmail
 import com.wodox.domain.user.usecase.GetUserUseCase
 import com.wodox.model.Constants
@@ -29,6 +31,7 @@ class ActivityTaskViewModel @Inject constructor(
     private val deleteCommentUseCase: DeleteCommentUseCase,
     private val getCurrentUserEmail: GetCurrentUserEmail,
     private val getUserUseCase: GetUserUseCase,
+    private val updateCommentUseCase: UpdateCommentUseCase,
 ) : BaseUiStateViewModel<ActivityTaskUiState, ActivityTaskUiEvent, ActivityTaskUiAction>(app) {
 
     override fun initialState(): ActivityTaskUiState = ActivityTaskUiState()
@@ -50,6 +53,9 @@ class ActivityTaskViewModel @Inject constructor(
             ActivityTaskUiAction.LoadComments -> loadComments()
             is ActivityTaskUiAction.SendComment -> sendComment(action.content)
             is ActivityTaskUiAction.DeleteComment -> deleteComment(action.commentId)
+            is ActivityTaskUiAction.UpdateComment -> updateComment(action.commentId, action.content)
+            is ActivityTaskUiAction.StartEditComment -> startEditComment(action.comment)
+            ActivityTaskUiAction.CancelEditComment -> cancelEditComment()
         }
     }
 
@@ -70,14 +76,17 @@ class ActivityTaskViewModel @Inject constructor(
                 getAllCommentByTaskIdUseCase(taskId).collect { comments ->
                     updateState {
                         it.copy(
-                            listComments = comments, isLoadingComments = false, errorMessage = null
+                            listComments = comments,
+                            isLoadingComments = false,
+                            errorMessage = null
                         )
                     }
                 }
             } catch (e: Exception) {
                 updateState {
                     it.copy(
-                        isLoadingComments = false, errorMessage = e.message
+                        isLoadingComments = false,
+                        errorMessage = e.message
                     )
                 }
                 sendEvent(ActivityTaskUiEvent.ShowError(e.message ?: "Unknown error"))
@@ -95,7 +104,8 @@ class ActivityTaskViewModel @Inject constructor(
             val userID = getUserUseCase()
             updateState {
                 it.copy(
-                    email = email, userId = userID
+                    email = email,
+                    userId = userID
                 )
             }
 
@@ -124,6 +134,35 @@ class ActivityTaskViewModel @Inject constructor(
         }
     }
 
+    private fun updateComment(commentId: UUID, newContent: String) {
+        if (newContent.isBlank()) {
+            sendEvent(ActivityTaskUiEvent.ShowError("Comment cannot be empty"))
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+                val currentComment = uiState.value.listComments.find { it.id == commentId }
+                if (currentComment == null) {
+                    sendEvent(ActivityTaskUiEvent.ShowError("Comment not found"))
+                    return@launch
+                }
+
+                val updateParams = UpdateCommentParams(
+                    commentId = commentId,
+                    newContent = newContent
+                )
+
+                val result = updateCommentUseCase(updateParams)
+                if (result) {
+                    sendEvent(ActivityTaskUiEvent.CommentUpdateSuccess)
+                    cancelEditComment()
+                    loadComments()
+                } else {
+                    sendEvent(ActivityTaskUiEvent.ShowError("Failed to update comment"))
+                }
+        }
+    }
+
     private fun deleteComment(commentId: UUID) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -134,5 +173,25 @@ class ActivityTaskViewModel @Inject constructor(
                 sendEvent(ActivityTaskUiEvent.ShowError(e.message ?: "Error deleting comment"))
             }
         }
+    }
+
+    private fun startEditComment(comment: Comment) {
+        updateState {
+            it.copy(
+                editingCommentId = comment.id,
+                editingCommentContent = comment.content
+            )
+        }
+        sendEvent(ActivityTaskUiEvent.StartEditMode(comment))
+    }
+
+    private fun cancelEditComment() {
+        updateState {
+            it.copy(
+                editingCommentId = null,
+                editingCommentContent = null
+            )
+        }
+        sendEvent(ActivityTaskUiEvent.CancelEditMode)
     }
 }

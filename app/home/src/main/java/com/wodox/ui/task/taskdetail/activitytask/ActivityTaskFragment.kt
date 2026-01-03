@@ -42,7 +42,12 @@ class ActivityTaskFragment :
             context,
             object : CommentAdapter.OnCommentActionListener {
                 override fun onCommentDelete(comment: Comment) {
-                    viewModel.dispatch(ActivityTaskUiAction.DeleteComment(comment.id))
+                    // Show confirmation dialog
+                    showDeleteConfirmation(comment)
+                }
+
+                override fun onCommentEdit(comment: Comment) {
+                    viewModel.dispatch(ActivityTaskUiAction.StartEditComment(comment))
                 }
 
                 override fun onCommentLike(comment: Comment) {
@@ -61,11 +66,7 @@ class ActivityTaskFragment :
                 }
 
                 override fun onMoreOptions(comment: Comment) {
-                    Toast.makeText(
-                        requireContext(),
-                        "More options",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showCommentOptions(comment)
                 }
             }
         )
@@ -78,6 +79,7 @@ class ActivityTaskFragment :
         setupCommentBar()
         observeEvents()
         observeComments()
+        observeEditMode()
     }
 
     private fun setupUI() {
@@ -115,8 +117,19 @@ class ActivityTaskFragment :
     }
 
     private fun setupCommentBar() {
-        binding.bottomCommentBar.setOnSendListener { commentContent ->
-            viewModel.dispatch(ActivityTaskUiAction.SendComment(commentContent))
+        binding.bottomCommentBar.apply {
+            setOnSendListener { commentContent ->
+                val editingCommentId = viewModel.uiState.value.editingCommentId
+                if (editingCommentId != null) {
+                    viewModel.dispatch(ActivityTaskUiAction.UpdateComment(editingCommentId, commentContent))
+                } else {
+                    viewModel.dispatch(ActivityTaskUiAction.SendComment(commentContent))
+                }
+            }
+
+            setOnCancelListener {
+                viewModel.dispatch(ActivityTaskUiAction.CancelEditComment)
+            }
         }
     }
 
@@ -139,12 +152,33 @@ class ActivityTaskFragment :
                         ).show()
                         binding.bottomCommentBar.clearComment()
                     }
+                    ActivityTaskUiEvent.CommentUpdateSuccess -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Comment updated successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        binding.bottomCommentBar.clearComment()
+                    }
                     ActivityTaskUiEvent.CommentDeleteSuccess -> {
                         Toast.makeText(
                             requireContext(),
                             "Comment deleted",
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
+                    is ActivityTaskUiEvent.StartEditMode -> {
+                        binding.bottomCommentBar.apply {
+                            setEditMode(true)
+                            setCommentText(event.comment.content)
+                            requestCommentFocus()
+                        }
+                    }
+                    ActivityTaskUiEvent.CancelEditMode -> {
+                        binding.bottomCommentBar.apply {
+                            setEditMode(false)
+                            clearComment()
+                        }
                     }
                 }
             }
@@ -155,12 +189,51 @@ class ActivityTaskFragment :
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
                 commentAdapter.submitList(state.listComments)
+                commentAdapter.setEditingCommentId(state.editingCommentId)
 
                 val hasComments = state.listComments.isNotEmpty()
                 binding.tvCommentsTitle.visibility =
                     if (hasComments) android.view.View.VISIBLE else android.view.View.GONE
             }
         }
+    }
+
+    private fun observeEditMode() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                state.editingCommentId?.let { commentId ->
+                    val position = state.listComments.indexOfFirst { it.id == commentId }
+                    if (position != -1) {
+                        binding.rvComments.smoothScrollToPosition(position)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showDeleteConfirmation(comment: Comment) {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Delete Comment")
+            .setMessage("Are you sure you want to delete this comment?")
+            .setPositiveButton("Delete") { _, _ ->
+                viewModel.dispatch(ActivityTaskUiAction.DeleteComment(comment.id))
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showCommentOptions(comment: Comment) {
+        val options = arrayOf("Edit", "Delete", "Report")
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Comment Options")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> viewModel.dispatch(ActivityTaskUiAction.StartEditComment(comment))
+                    1 -> showDeleteConfirmation(comment)
+                    2 -> Toast.makeText(requireContext(), "Report feature coming soon", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .show()
     }
 
     companion object {

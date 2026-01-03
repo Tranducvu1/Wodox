@@ -5,9 +5,9 @@ import java.util.Date
 import java.util.UUID
 
 data class CheckList(
-    var id: UUID = UUID.randomUUID(),
+    var id: String = UUID.randomUUID().toString(),
 
-    var taskId: UUID,
+    var taskId: String = "",
 
     var description: String? = null,
 
@@ -16,4 +16,4 @@ data class CheckList(
     var updatedAt: Date = Date(),
 
     var deletedAt: Date? = null,
-): Serializable
+) : Serializable

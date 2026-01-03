@@ -12,44 +12,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/baloo2_semi_bold"
+            android:gravity="center"
             android:text="@string/create_new_channel"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilChannelName"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etChannelName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:background="@drawable/edittext_border"
             android:hint="@string/channel_name"
-            app:boxStrokeColor="#007AFF"
-            app:hintTextColor="#007AFF">
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="12dp"
+            android:textColorHint="#999999" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etChannelName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilChannelDescription"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etChannelDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:background="@drawable/edittext_border"
+            android:gravity="top"
             android:hint="Description (Optional)"
-            app:boxStrokeColor="#007AFF"
-            app:hintTextColor="#007AFF">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etChannelDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:maxLines="3" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:padding="12dp"
+            android:textColorHint="#999999" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchPrivate"
@@ -73,11 +65,10 @@
             android:id="@+id/footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:background="@android:color/white"
             android:orientation="horizontal"
-            android:padding="16dp"
-            android:weightSum="2"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:weightSum="2">
 
             <Button
                 android:id="@+id/btnCancel"
@@ -93,18 +84,20 @@
                 android:layout_width="12dp"
                 android:layout_height="0dp" />
 
-            <com.google.android.material.button.MaterialButton
+            <TextView
                 android:id="@+id/btnCreate"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
+                android:background="@drawable/bg_green_corner_9"
+                android:clickable="true"
+                android:focusable="true"
                 android:fontFamily="@font/nunito_bold"
+                android:gravity="center"
                 android:text="Create Channel"
                 android:textColor="@android:color/white"
-                app:backgroundTint="#007AFF"
-                app:cornerRadius="8dp" />
+                android:textSize="@dimen/sp_12" />
         </LinearLayout>
-
 
     </LinearLayout>
 </layout>

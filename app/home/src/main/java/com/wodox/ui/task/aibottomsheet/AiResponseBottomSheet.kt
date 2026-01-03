@@ -31,7 +31,6 @@ class AiResponseBottomSheet :
         setupAction()
         observer()
         setupRecycleView()
-        // ✅ Load chat history when opening
         loadChatHistoryFromDatabase()
     }
 
@@ -130,7 +129,6 @@ class AiResponseBottomSheet :
                         )
                     }
 
-                    // Update adapter
                     adapterMessage.updateMessages(messages)
                     binding.rvMessages.scrollToPosition(adapterMessage.list.size - 1)
                 }

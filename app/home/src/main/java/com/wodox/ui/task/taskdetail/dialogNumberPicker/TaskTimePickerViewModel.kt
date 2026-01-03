@@ -2,7 +2,7 @@ package com.wodox.ui.task.taskdetail.dialogNumberPicker
 
 import android.app.Application
 import com.wodox.core.base.viewmodel.BaseUiStateViewModel
-import com.wodox.domain.home.usecase.SaveTaskUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

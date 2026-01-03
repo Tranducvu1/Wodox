@@ -19,7 +19,6 @@ sealed class CreateTaskUiAction {
     ) : CreateTaskUiAction()
     object AnalyzeUserSkill : CreateTaskUiAction()
 
-    data class AssignUser(val id : UUID)  : CreateTaskUiAction()
 
     data class UpdateDifficulty(val difficulty: Int, val difficultyName: String) : CreateTaskUiAction()
 

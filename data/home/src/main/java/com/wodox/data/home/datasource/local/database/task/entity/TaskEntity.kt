@@ -28,5 +28,6 @@ data class TaskEntity(
     val createdAt: Date = Date(),
     var updatedAt: Date = Date(),
     var deletedAt: Date? = null,
-    val isFavourite: Boolean = false
+    val isFavourite: Boolean = false,
+    var calculatedPriority: Double = 0.0
 )

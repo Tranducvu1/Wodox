@@ -13,6 +13,8 @@ class UserMapper @Inject constructor() : AbstractMapper<UserEntity, User>() {
             email = entity.email,
             password = entity.password,
             name = entity.name,
+            bio = entity.bio,
+            phone = entity.phone,
             avatar = entity.avatar,
             isActive = entity.isActive,
             createdAt = entity.createdAt,
@@ -27,6 +29,8 @@ class UserMapper @Inject constructor() : AbstractMapper<UserEntity, User>() {
             email = domain.email,
             password = domain.password,
             name = domain.name,
+            phone = domain.phone,
+            bio = domain.bio,
             avatar = domain.avatar,
             isActive = domain.isActive,
             createdAt = domain.createdAt,
@@ -39,6 +43,8 @@ class UserMapper @Inject constructor() : AbstractMapper<UserEntity, User>() {
         return mapOf(
             "id" to entity.id.toString(),
             "email" to entity.email,
+            "bio" to entity.bio,
+            "phone" to entity.phone,
             "name" to entity.name,
             "avatar" to entity.avatar,
             "isActive" to entity.isActive,
@@ -46,9 +52,5 @@ class UserMapper @Inject constructor() : AbstractMapper<UserEntity, User>() {
             "updatedAt" to entity.updatedAt,
             "deletedAt" to entity.deletedAt
         )
-    }
-
-    fun mapUserToMap(user: User): Map<String, Any?> {
-        return mapToMap(mapToEntity(user))
     }
 }

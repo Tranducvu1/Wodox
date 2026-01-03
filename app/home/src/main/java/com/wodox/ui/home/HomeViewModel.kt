@@ -11,9 +11,9 @@ import com.wodox.domain.chat.usecase.GetMarkTaskNotificationsReadUseCase
 import com.wodox.core.base.viewmodel.BaseUiStateViewModel
 import com.wodox.core.base.viewmodel.EmptyUiEvent
 import com.wodox.domain.home.model.local.Task
-import com.wodox.domain.home.usecase.GetAllTaskUseCase
-import com.wodox.domain.home.usecase.GetTaskByTaskIdUseCase
-import com.wodox.domain.home.usecase.SaveTaskUseCase
+import com.wodox.domain.home.usecase.task.GetAllTaskUseCase
+import com.wodox.domain.home.usecase.task.GetTaskByTaskIdUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
 import com.wodox.domain.home.usecase.taskassign.GetTaskAssignByUserIdUseCase
 import com.wodox.domain.user.usecase.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

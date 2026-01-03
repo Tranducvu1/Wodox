@@ -31,7 +31,7 @@ data class AttachmentEntity(
     @PrimaryKey
     var id: UUID = UUID.randomUUID(),
 
-    var taskId: UUID? = null,
+    var taskId: UUID= UUID.randomUUID(),
 
     var subTaskId:UUID? = null,
 

@@ -4,19 +4,21 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.wodox.chat.model.local.NotificationActionType
+import com.wodox.domain.chat.model.local.NotificationActionType
 import com.wodox.core.base.viewmodel.BaseUiStateViewModel
 import com.wodox.core.extension.serializable
 import com.wodox.domain.chat.model.local.Notification
 import com.wodox.domain.chat.usecase.SaveNotificationUseCase
 import com.wodox.domain.home.model.local.*
 import com.wodox.domain.home.usecase.*
+import com.wodox.domain.home.usecase.log.SaveLogUseCase
+import com.wodox.domain.home.usecase.task.AnalyzeUserTasksUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
 import com.wodox.domain.home.usecase.taskassign.AssignUserToTaskUseCase
 import com.wodox.domain.user.model.User
 import com.wodox.domain.user.usecase.GetUserById
 import com.wodox.domain.user.usecase.GetUserUseCase
 import com.wodox.model.Constants
-import com.wodox.ui.task.taskdetail.TaskDetailUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,7 +67,6 @@ class CreateTaskViewModel @Inject constructor(
             is CreateTaskUiAction.DeleteAttachment -> deleteAttachment(action.attachment)
             is CreateTaskUiAction.SaveTask -> saveTask(action.task)
             is CreateTaskUiAction.AnalyzeUserSkill -> analyzeUserSkill()
-            is CreateTaskUiAction.AssignUser -> assignUserToTask(action.id)
             is CreateTaskUiAction.LoadSuggestedSupporters -> loadSuggestedSupporters(
                 action.difficulty,
                 action.priority
@@ -120,7 +121,10 @@ class CreateTaskViewModel @Inject constructor(
             )
 
             saveSubTaskUseCase(newTask)
-            Log.d(TAG, "✅ Task saved successfully: ${newTask.id}")
+
+            currentTask.postValue(newTask)
+
+            Log.d(TAG, "Task saved successfully: ${newTask.id}")
 
             val logTask = Log(
                 id = UUID.randomUUID(),
@@ -131,63 +135,13 @@ class CreateTaskViewModel @Inject constructor(
             )
             saveLogUseCase(logTask)
 
-            Log.d(TAG, "🔍 Starting auto-analysis after task creation...")
+            Log.d(TAG, "Starting auto-analysis after task creation...")
             analyzeUserSkill()
 
             sendEvent(CreateTaskUiEvent.SaveSuccess)
         }
     }
 
-    private fun assignUserToTask(userId: UUID) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val task = currentTask.value ?: return@launch
-            val ownerId = getUserUseCase() ?: return@launch
-
-            val assign = TaskAssignee(
-                id = UUID.randomUUID(),
-                ownerId = ownerId,
-                taskId = task.id,
-                userId = userId,
-                assignedAt = Date(),
-            )
-            assignUserToTaskUseCase(assign)
-
-            val updatedTask = task.copy(
-                assignedUserIds = (task.assignedUserIds + userId).distinct()
-            )
-            currentTask.postValue(updatedTask)
-            saveTaskUseCase(updatedTask)
-
-            val fromUser = getUserById(ownerId)
-
-            val notification = Notification(
-                id = UUID.randomUUID(),
-                userId = userId,
-                fromUserId = ownerId,
-                fromUserName = fromUser?.name ?: "Someone",
-                userAvatar = fromUser?.avatar ?: "",
-                taskId = task.id,
-                taskName = updatedTask.title,
-                actionType = NotificationActionType.ASSIGNED,
-                content = "${fromUser?.name ?: "Someone"} assigned you a task",
-                timestamp = System.currentTimeMillis(),
-                updatedAt = Date(),
-                createdAt = Date(),
-                dismissedAt = null,
-                readAt = null,
-                deletedAt = null,
-                isRead = false,
-                isDismissed = false
-            )
-
-            saveNotificationUseCase(notification)
-            saveLog(task.id, "Assign user", "userId = $userId")
-
-            withContext(Dispatchers.Main) {
-                sendEvent(CreateTaskUiEvent.AssignSuccess)
-            }
-        }
-    }
 
     private fun analyzeUserSkill() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -334,7 +288,7 @@ class CreateTaskViewModel @Inject constructor(
             val task = currentTask.value ?: return@launch
 
             val difficultyEnum =
-                com.wodox.domain.home.model.local.Difficulty.valueOf(difficultyName)
+                Difficulty.valueOf(difficultyName)
 
             val updatedTask = task.copy(difficulty = difficultyEnum)
             currentTask.postValue(updatedTask)

@@ -3,9 +3,7 @@ package com.wodox.chat.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.wodox.domain.chat.model.local.MessageStatus
-import java.util.UUID
-
+import com.google.firebase.firestore.PropertyName
 
 @Entity(
     tableName = "messages",
@@ -15,10 +13,24 @@ import java.util.UUID
 )
 data class MessageChatEntity(
     @PrimaryKey
-    val id: UUID = UUID.randomUUID(),
-    var text: String,
-    val senderId: UUID? = null,
-    val receiverId: UUID? = null,
-    val timestamp: Long = System.currentTimeMillis(),
-    val status: MessageStatus = MessageStatus.SENT
-)
+    @PropertyName("id")
+    val id: String = "",
+
+    @PropertyName("text")
+    var text: String = "",
+
+    @PropertyName("senderId")
+    val senderId: String = "",
+
+    @PropertyName("receiverId")
+    val receiverId: String = "",
+
+    @PropertyName("timestamp")
+    val timestamp: Long = 0L,
+
+    @PropertyName("status")
+    val status: String = "SENT",
+
+) {
+    constructor() : this("", "", "", "", 0L, "SENT")
+}

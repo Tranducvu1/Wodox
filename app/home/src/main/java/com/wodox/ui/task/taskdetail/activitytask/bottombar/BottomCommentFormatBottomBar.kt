@@ -6,9 +6,11 @@ import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import android.util.AttributeSet
+import android.view.View
 import android.widget.EditText
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.wodox.home.databinding.BottomCommentFormatBarBinding
 import android.graphics.Typeface
@@ -32,9 +34,13 @@ class BottomCommentFormatBottomBar @JvmOverloads constructor(
     private lateinit var btnCode: ImageView
     private lateinit var btnLink: ImageView
     private lateinit var btnSend: ImageView
+    private lateinit var btnCancel: TextView
+    private lateinit var editModeIndicator: ConstraintLayout
 
     private var onSendListener: ((String) -> Unit)? = null
+    private var onCancelListener: (() -> Unit)? = null
     private var isFormatVisible = false
+    private var isEditMode = false
 
     init {
         initView()
@@ -58,6 +64,8 @@ class BottomCommentFormatBottomBar @JvmOverloads constructor(
         btnCode = binding.btnCode
         btnLink = binding.btnLink
         btnSend = binding.btnSend
+        btnCancel = binding.btnCancel
+        editModeIndicator = binding.editModeIndicator
     }
 
     private fun setupListeners() {
@@ -92,12 +100,15 @@ class BottomCommentFormatBottomBar @JvmOverloads constructor(
         btnSend.setOnClickListener {
             sendComment()
         }
+
+        btnCancel.setOnClickListener {
+            onCancelListener?.invoke()
+        }
     }
 
     private fun toggleFormatOptions() {
         isFormatVisible = !isFormatVisible
         llFormatOptions.visibility = if (isFormatVisible) VISIBLE else GONE
-
         btnToggleFormat.alpha = if (isFormatVisible) 1f else 0.6f
     }
 
@@ -203,8 +214,10 @@ class BottomCommentFormatBottomBar @JvmOverloads constructor(
 
         if (comment.isNotEmpty()) {
             onSendListener?.invoke(comment)
-            clearComment()
-            hideFormatOptions()
+            if (!isEditMode) {
+                clearComment()
+                hideFormatOptions()
+            }
         }
     }
 
@@ -212,10 +225,15 @@ class BottomCommentFormatBottomBar @JvmOverloads constructor(
         this.onSendListener = listener
     }
 
+    fun setOnCancelListener(listener: () -> Unit) {
+        this.onCancelListener = listener
+    }
+
     fun getCommentText(): String = edtComment.text.toString()
 
     fun setCommentText(text: String) {
         edtComment.setText(text)
+        edtComment.setSelection(text.length) // Move cursor to end
     }
 
     fun clearComment() {
@@ -234,7 +252,25 @@ class BottomCommentFormatBottomBar @JvmOverloads constructor(
         btnToggleFormat.alpha = 1f
     }
 
+    fun setEditMode(isEditing: Boolean) {
+        isEditMode = isEditing
+
+        if (isEditing) {
+            btnCancel.visibility = VISIBLE
+            editModeIndicator.visibility = VISIBLE
+            edtComment.hint = "Edit your comment..."
+        } else {
+            btnCancel.visibility = GONE
+            editModeIndicator.visibility = GONE
+            edtComment.hint = "Write a comment..."
+
+        }
+    }
+
     fun requestCommentFocus() {
         edtComment.requestFocus()
+        // Show keyboard
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
+        imm?.showSoftInput(edtComment, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
     }
 }

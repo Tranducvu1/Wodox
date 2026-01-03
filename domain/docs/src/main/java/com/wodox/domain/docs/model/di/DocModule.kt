@@ -2,6 +2,7 @@ package com.wodox.domain.docs.model.di
 
 import com.wodox.domain.docs.model.repository.SharedDocumentRepository
 import com.wodox.domain.docs.model.usecase.DeleteSharedDocumentUseCase
+import com.wodox.domain.docs.model.usecase.GetDocumentsByUserIdUseCase
 import com.wodox.domain.docs.model.usecase.GetSharedDocumentByIdUseCase
 import com.wodox.domain.docs.model.usecase.GetSharedDocumentsForUserUseCase
 import com.wodox.domain.docs.model.usecase.SaveSharedDocumentUseCase
@@ -52,5 +53,14 @@ object DocModule {
         repository: SharedDocumentRepository
     ): DeleteSharedDocumentUseCase {
         return DeleteSharedDocumentUseCase(repository)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideGetDocumentsByUserIdUseCase(
+        repository: SharedDocumentRepository
+    ): GetDocumentsByUserIdUseCase {
+        return GetDocumentsByUserIdUseCase(repository)
     }
 }

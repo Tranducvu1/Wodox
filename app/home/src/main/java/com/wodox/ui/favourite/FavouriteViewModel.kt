@@ -6,7 +6,7 @@ import androidx.paging.cachedIn
 import com.wodox.core.base.viewmodel.BaseUiStateViewModel
 import com.wodox.core.base.viewmodel.EmptyUiEvent
 import com.wodox.domain.home.model.local.Task
-import com.wodox.domain.home.usecase.SaveTaskUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
 import com.wodox.domain.home.usecase.task.GetAllTaskFavourite
 import com.wodox.domain.user.usecase.GetUserUseCase
 import com.wodox.ui.home.HomeUiAction

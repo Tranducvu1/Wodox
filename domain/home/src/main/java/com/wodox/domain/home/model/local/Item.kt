@@ -33,6 +33,9 @@ fun getDefaultItems(): List<Item> {
         Item(
             name = "Reminder", type = ItemType.REMINDER, uri = null
         ),
+        Item(
+            name = "Document", type = ItemType.DOC, uri = null
+        ),
     )
 }
 

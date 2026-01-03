@@ -5,15 +5,18 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
 import java.util.Date
-import java.util.UUID
-
 
 @Parcelize
+@IgnoreExtraProperties
 @Entity(
     tableName = "CheckList",
-    indices = [(Index(value = ["id"], unique = true))],
+    indices = [
+        Index(value = ["id"], unique = true),
+        Index(value = ["taskId"])
+    ],
     foreignKeys = [
         ForeignKey(
             entity = TaskEntity::class,
@@ -25,15 +28,24 @@ import java.util.UUID
 )
 data class CheckListEntity(
     @PrimaryKey
-    var id: UUID = UUID.randomUUID(),
+    var id: String = "",
 
-    var taskId: UUID,
+    var taskId: String = "",
 
     var description: String? = null,
 
-    var createdAt: Date = Date(),
+    var createdAt: Date? = null,
 
-    var updatedAt: Date = Date(),
+    var updatedAt: Date? = null,
 
     var deletedAt: Date? = null,
-) : Parcelable
+) : Parcelable {
+    constructor() : this(
+        id = "",
+        taskId = "",
+        description = null,
+        createdAt = null,
+        updatedAt = null,
+        deletedAt = null
+    )
+}

@@ -8,6 +8,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.toColorInt
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.wodox.core.ui.adapter.TMVVMAdapter
 import com.wodox.core.ui.adapter.TMVVMViewHolder
 import com.wodox.domain.home.model.local.Item
@@ -16,10 +18,8 @@ import com.wodox.home.BR
 import com.wodox.home.R
 import com.wodox.home.databinding.ItemItemsLayoutBinding
 
-
 class ItemAdapter(
-    private val context: Context?,
-    private val listener: OnItemClickListener
+    private val context: Context?, private val listener: OnItemClickListener
 ) : TMVVMAdapter<Item>(ArrayList()) {
 
     interface OnItemClickListener {
@@ -27,85 +27,90 @@ class ItemAdapter(
     }
 
     override fun onCreateViewHolderBase(
-        parent: ViewGroup?,
-        viewType: Int
+        parent: ViewGroup?, viewType: Int
     ): TMVVMViewHolder {
         val binding = ItemItemsLayoutBinding.inflate(
-            LayoutInflater.from(parent?.context),
-            parent,
-            false
+            LayoutInflater.from(parent?.context), parent, false
         )
         return TMVVMViewHolder(binding)
     }
 
     override fun onBindViewHolderBase(
-        holder: TMVVMViewHolder?,
-        position: Int
+        holder: TMVVMViewHolder?, position: Int
     ) {
-        val items = list.getOrNull(position) ?: return
-        val binding = holder?.binding as ItemItemsLayoutBinding
+        val item = list.getOrNull(position) ?: return
+        val binding = holder?.binding as? ItemItemsLayoutBinding ?: return
 
-        setAttachmentIcon(binding.ivAttachmentIcon, items)
+        setupItemIcon(binding.ivAttachmentIcon, item)
+        setupClickListener(binding, item)
 
-        binding.root.setOnClickListener {
-            listener.onClick(items)
-        }
-
-        binding.setVariable(BR.itemTask, items)
+        binding.setVariable(BR.itemTask, item)
         binding.executePendingBindings()
     }
 
-    private fun setAttachmentIcon(imageView: ImageView, item: Item) {
+    private fun setupItemIcon(imageView: ImageView, item: Item) {
         context?.let { ctx ->
             when (item.type) {
                 ItemType.TASK -> {
                     if (item.uri != null) {
-                        Glide.with(ctx)
-                            .load(item.uri)
-                            .centerCrop()
-                            .into(imageView)
+                        loadImageWithGlide(imageView, item.uri!!)
                     } else {
-                        setIconWithColor(
-                            imageView,
-                            R.drawable.ic_check_circle,
-                            "#4CAF50".toColorInt()
+                        setTintedIcon(
+                            imageView, R.drawable.ic_check_circle, "#4CAF50"
                         )
                     }
                 }
 
                 ItemType.CHANNEL -> {
-                    setIconWithColor(
-                        imageView,
-                        R.drawable.ic_hashtag,
-                        "#2196F3".toColorInt()
+                    setTintedIcon(
+                        imageView, R.drawable.ic_hashtag, "#2196F3"
                     )
                 }
 
-
                 ItemType.REMINDER -> {
-                    setIconWithColor(
-                        imageView,
-                        R.drawable.ic_reminder,
-                        "#F44336".toColorInt()
+                    setTintedIcon(
+                        imageView, R.drawable.ic_reminder, "#FF9800"
+                    )
+                }
+
+                ItemType.DOC -> {
+                    setTintedIcon(
+                        imageView, com.wodox.resources.R.drawable.ic_docs, "#9C27B0"
                     )
                 }
 
                 else -> {
-                    imageView.setImageDrawable(
-                        ContextCompat.getDrawable(ctx, com.wodox.resources.R.drawable.ic_add)
+                    setTintedIcon(
+                        imageView, com.wodox.resources.R.drawable.ic_add, "#757575"
                     )
                 }
             }
         }
     }
 
-    private fun setIconWithColor(imageView: ImageView, drawableRes: Int, color: Int) {
+    private fun loadImageWithGlide(imageView: ImageView, uri: Any) {
+        context?.let { ctx ->
+            val cornerRadius =
+                ctx.resources.getDimensionPixelSize(com.wodox.resources.R.dimen.dp_12)
+            Glide.with(ctx).load(uri)
+                .apply(RequestOptions().transform(RoundedCorners(cornerRadius))).centerCrop()
+                .into(imageView)
+        }
+    }
+
+    private fun setTintedIcon(imageView: ImageView, drawableRes: Int, colorHex: String) {
         context?.let { ctx ->
             val drawable = ContextCompat.getDrawable(ctx, drawableRes)?.mutate()
             drawable?.let {
-                DrawableCompat.setTint(it, color)
+                DrawableCompat.setTint(it, colorHex.toColorInt())
                 imageView.setImageDrawable(it)
             }
+        }
+    }
+
+    private fun setupClickListener(binding: ItemItemsLayoutBinding, item: Item) {
+        binding.root.setOnClickListener {
+            listener.onClick(item)
         }
     }
 }

@@ -1,8 +1,10 @@
-package com.wodox.chat.model.local
+package com.wodox.domain.chat.model.local
 
 enum class NotificationActionType {
     ASSIGNED,
     MENTIONED,
     COMPLETED,
-    COMMENTED
+    COMMENTED,
+    DEADLINE_REMINDER,
+    MAKE_FRIEND
 }

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.wodox.core.base.viewmodel.BaseUiStateViewModel
 import com.wodox.core.extension.toArrayList
 import com.wodox.domain.home.model.local.Task
-import com.wodox.domain.home.usecase.SaveTaskUseCase
+import com.wodox.domain.home.usecase.task.SaveTaskUseCase
 import com.wodox.model.Constants
 import com.wodox.ui.task.menu.TaskBarMenu
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -44,7 +44,7 @@ android {
 }
 
 dependencies {
-// Androidx Core
+    // Androidx Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.ktx)
@@ -65,13 +65,17 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.room.room.ktx)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.firebase.dynamic.links.ktx)
+    implementation(libs.androidx.hilt.common)
     kapt(libs.hilt.android.compiler)
+    kapt(libs.androidx.hilt.compiler)
     ksp(libs.androidx.hilt.compiler)
 
     // Kotlin Serialization
@@ -84,29 +88,36 @@ dependencies {
     // Glide
     implementation(libs.glide)
     implementation(libs.okhttp3.integration)
-    kapt(libs.hilt.android.compiler)
-    //flex box
-    implementation (libs.flexbox)
 
+    // Flexbox
+    implementation(libs.flexbox)
+
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    // Compose
     implementation(libs.androidx.activity.compose)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Navigation & UI
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.number.picker)
+
     // EventBus
     implementation(libs.eventbus)
 
+    // Material Design
     implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     // Project modules
     implementation(project(":app:core"))
     implementation(project(":app:common"))

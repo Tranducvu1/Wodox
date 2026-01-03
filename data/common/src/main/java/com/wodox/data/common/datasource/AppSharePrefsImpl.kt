@@ -2,8 +2,8 @@ package com.wodox.data.common.datasource
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.osprey.core.extension.get
-import com.osprey.core.extension.set
+import com.wodox.core.extension.get
+import com.wodox.core.extension.set
 import java.util.Locale
 import javax.inject.Inject
 

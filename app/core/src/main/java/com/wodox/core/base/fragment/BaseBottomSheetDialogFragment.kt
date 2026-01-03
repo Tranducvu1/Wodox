@@ -35,10 +35,9 @@ abstract class BaseBottomSheetDialogFragment<VB : ViewDataBinding, VM : ViewMode
     override fun onStart() {
         super.onStart()
 
-        val bottomSheet =
-            dialog?.findViewById<View>(
-                com.google.android.material.R.id.design_bottom_sheet
-            ) ?: return
+        val bottomSheet = dialog?.findViewById<View>(
+            com.google.android.material.R.id.design_bottom_sheet
+        ) ?: return
         bottomSheet.background = null
         binding.root.clipToOutline = true
         val behavior = BottomSheetBehavior.from(bottomSheet)
@@ -58,9 +57,7 @@ abstract class BaseBottomSheetDialogFragment<VB : ViewDataBinding, VM : ViewMode
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = DataBindingUtil.inflate(inflater, layoutId(), container, false)
         binding.lifecycleOwner = viewLifecycleOwner

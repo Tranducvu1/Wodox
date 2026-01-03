@@ -9,7 +9,7 @@ import java.util.UUID
 data class Attachment(
     var id: UUID = UUID.randomUUID(),
 
-    var taskId: UUID? = null,
+    var taskId: UUID  = UUID.randomUUID(),
 
     var name: String? = null,
 

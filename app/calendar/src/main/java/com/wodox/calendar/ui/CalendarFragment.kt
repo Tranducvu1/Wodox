@@ -30,7 +30,8 @@ import java.util.Locale
 
 @AndroidEntryPoint
 class CalendarFragment : BaseFragment<FragmentCalendarLayoutBinding, CalenderViewModel>(
-    CalenderViewModel::class) {
+    CalenderViewModel::class
+) {
     private var selectedDate: LocalDate = LocalDate.now()
     private var allTasks: List<Task> = emptyList()
 

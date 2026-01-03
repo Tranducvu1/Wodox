@@ -3,9 +3,9 @@ package com.wodox.chat.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.wodox.chat.model.local.NotificationActionType
+import com.google.firebase.firestore.PropertyName
+import com.wodox.domain.chat.model.local.NotificationActionType
 import java.util.Date
-import java.util.UUID
 
 @Entity(
     tableName = "Notification",
@@ -13,38 +13,58 @@ import java.util.UUID
         Index(value = ["id"], unique = true),
     ]
 )
-
 data class NotificationEntity(
     @PrimaryKey
-    var id: UUID = UUID.randomUUID(),
+    @PropertyName("id")
+    var id: String = "",
 
-    var userId: UUID,
+    @PropertyName("userId")
+    var userId: String = "",
 
-    var fromUserId: UUID,
+    @PropertyName("fromUserId")
+    var fromUserId: String = "",
 
-    var fromUserName: String,
+    @PropertyName("fromUserName")
+    var fromUserName: String = "",
 
-    var userAvatar: String,
+    @PropertyName("userAvatar")
+    var userAvatar: String = "",
 
-    var taskId: UUID,
+    @PropertyName("taskId")
+    var taskId: String = "",
 
-    var taskName: String,
+    @PropertyName("taskName")
+    var taskName: String = "",
 
+    @PropertyName("actionType")
     var actionType: String = NotificationActionType.ASSIGNED.name,
 
+    @PropertyName("content")
     var content: String? = null,
 
+    @PropertyName("isRead")
     var isRead: Boolean = false,
 
+    @PropertyName("isDismissed")
     var isDismissed: Boolean = false,
 
+    @PropertyName("createdAt")
     var createdAt: Date = Date(),
 
+    @PropertyName("readAt")
     var readAt: Date? = null,
 
+    @PropertyName("dismissedAt")
     var dismissedAt: Date? = null,
 
-    var updatedAt : Date? = null,
+    @PropertyName("updatedAt")
+    var updatedAt: Date? = null,
 
+    @PropertyName("deletedAt")
     var deletedAt: Date? = null
-)
+) {
+    constructor() : this(
+        "", "", "", "", "", "", "", "", null, false, false,
+        Date(), null, null, null, null
+    )
+}

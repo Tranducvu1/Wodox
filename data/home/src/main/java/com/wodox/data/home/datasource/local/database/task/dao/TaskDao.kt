@@ -9,7 +9,6 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.wodox.data.home.datasource.local.database.task.entity.TaskEntity
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 import java.util.UUID
 
 @Dao
@@ -61,10 +60,22 @@ interface TaskDao {
     }
 
     @Query(
-        "  SELECT Task.* FROM Task INNER JOIN TaskAssignees ON Task.id = TaskAssignees.taskId WHERE TaskAssignees.userId = :userId AND Task.deletedAt IS NULL\n" +
-                "ORDER BY Task.priority DESC, Task.createdAt ASC"
+        "SELECT Task.* FROM Task INNER JOIN TaskAssignees ON Task.id = TaskAssignees.taskId WHERE TaskAssignees.userId = :userId AND Task.deletedAt IS NULL ORDER BY Task.priority DESC, Task.createdAt ASC"
     )
     fun getTasksByUserId(userId: UUID): PagingSource<Int, TaskEntity>
+
+    // ✅ NEW: Sắp xếp theo calculatedPriority
+    @Transaction
+    @Query(
+        """
+        SELECT DISTINCT Task.* FROM Task
+        LEFT JOIN TaskAssignees ON Task.id = TaskAssignees.taskId
+        WHERE Task.deletedAt IS NULL 
+        AND (Task.ownerId = :userId OR TaskAssignees.userId = :userId)
+        ORDER BY Task.calculatedPriority DESC
+        """
+    )
+    fun getTasksForUserByPriority(userId: UUID): PagingSource<Int, TaskEntity>
 
     @Transaction
     @Query(
@@ -87,6 +98,18 @@ interface TaskDao {
         """
     )
     fun getTaskPaging(userId: UUID): PagingSource<Int, TaskEntity>
+
+    // ✅ UPDATE: Sắp xếp theo calculatedPriority
+    @Query(
+        """
+        SELECT * FROM Task 
+        WHERE ownerId = :ownerId 
+        AND deletedAt IS NULL 
+        AND isFavourite = 1 
+        ORDER BY Task.calculatedPriority DESC
+        """
+    )
+    fun getTaskFavouritePagingByPriority(ownerId: UUID): PagingSource<Int, TaskEntity>
 
     @Transaction
     @Query(
@@ -120,22 +143,36 @@ interface TaskDao {
     )
     suspend fun getAllTasksByUserId(userId: UUID): List<TaskEntity>
 
+    @Query(
+        """
+        SELECT * FROM Task 
+        WHERE ownerId = :userId 
+        AND deletedAt IS NULL
+        ORDER BY createdAt DESC
+        """
+    )
+    fun getTasksNotificationByUserId(userId: UUID): Flow<List<TaskEntity>>
+
     @Transaction
     @Query(
         """
-    SELECT DISTINCT Task.* FROM Task
-    LEFT JOIN TaskAssignees ON Task.id = TaskAssignees.taskId
-    WHERE Task.deletedAt IS NULL 
-    AND (Task.ownerId = :userId OR TaskAssignees.userId = :userId)
-    ORDER BY 
-        CASE 
-            WHEN Task.dueAt IS NULL THEN 999
-            ELSE CAST((julianday(Task.dueAt) - julianday('now')) AS INTEGER)
-        END ASC,
-        Task.priority DESC,
-        Task.difficulty DESC,
-        Task.createdAt DESC
-    """
+        SELECT DISTINCT Task.* FROM Task
+        LEFT JOIN TaskAssignees ON Task.id = TaskAssignees.taskId
+        WHERE Task.deletedAt IS NULL 
+        AND (Task.ownerId = :userId OR TaskAssignees.userId = :userId)
+        ORDER BY 
+            CASE 
+                WHEN Task.dueAt IS NULL THEN 999
+                ELSE CAST((julianday(Task.dueAt) - julianday('now')) AS INTEGER)
+            END ASC,
+            Task.priority DESC,
+            Task.difficulty DESC,
+            Task.createdAt DESC
+        """
     )
     fun getTasksForUser(userId: UUID): PagingSource<Int, TaskEntity>
+
+    @Query("UPDATE Task SET calculatedPriority = :priority WHERE id = :taskId")
+    suspend fun updateCalculatedPriority(taskId: UUID, priority: Double)
+
 }

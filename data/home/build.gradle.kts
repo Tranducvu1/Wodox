@@ -78,7 +78,13 @@ dependencies {
 
     // ===== Eventbus =====
     implementation(libs.eventbus)
-
+    // =====fireabse
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.database)
     // ===== Testing =====
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

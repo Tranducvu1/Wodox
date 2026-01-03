@@ -51,6 +51,15 @@ object UseCaseModule {
         return GetNotificationByUserIdUseCase(repository)
     }
 
+
+    @Singleton
+    @Provides
+    fun provideSendTaskReminderUseCase(
+        repository: NotificationRepository
+    ): SendTaskReminderUseCase {
+        return SendTaskReminderUseCase(repository)
+    }
+
     @Singleton
     @Provides
     fun provideMarkAsReadNotificationUseCase(

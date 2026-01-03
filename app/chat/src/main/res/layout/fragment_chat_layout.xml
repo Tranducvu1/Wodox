@@ -58,7 +58,7 @@
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvNotificationBadge"
                         android:layout_width="@dimen/dp_16"
-                        android:layout_height="@dimen/dp_16"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="top|end"
                         android:background="@drawable/bg_notification_badge"
                         android:gravity="center"
@@ -91,25 +91,27 @@
                 android:background="@color/colorD3D3D3"
                 app:layout_constraintTop_toBottomOf="@id/rvNotifications" />
 
-            <!-- Channels Section - THÊM MỚI -->
+            <!-- Channels Section - FIXED -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clChannelHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"
+                android:paddingVertical="@dimen/dp_8"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/viewNotificationDivider">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvChannelsTitle"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/dp_24"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/baloo2_bold"
-                    android:paddingEnd="@dimen/dp_16"
                     android:text="Channels"
                     android:textColor="@color/black"
                     android:textSize="@dimen/sp_16"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btnViewAllChannels"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -117,22 +119,32 @@
                     android:id="@+id/btnViewAllChannels"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/dp_20"
+                    android:layout_marginStart="@dimen/dp_8"
+                    android:layout_marginEnd="@dimen/dp_12"
+                    android:background="@drawable/bg_view_all_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/nunito_semi_bold"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
                     android:text="View all"
                     android:textColor="#007AFF"
-                    android:textSize="@dimen/sp_14"
-                    app:layout_constraintBottom_toBottomOf="@id/tvChannelsTitle"
+                    android:textSize="@dimen/sp_13"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/ivCreateChannel"
-                    app:layout_constraintTop_toTopOf="@id/tvChannelsTitle" />
+                    app:layout_constraintStart_toEndOf="@id/tvChannelsTitle"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/ivCreateChannel"
                     android:layout_width="@dimen/dp_24"
                     android:layout_height="@dimen/dp_24"
-                    android:layout_marginStart="@dimen/dp_8"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/gs_plus_code_vd_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView

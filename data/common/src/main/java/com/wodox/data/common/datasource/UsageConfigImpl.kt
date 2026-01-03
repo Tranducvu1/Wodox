@@ -1,8 +1,8 @@
 package com.wodox.data.common.datasource
 
 import android.content.Context
-import com.osprey.core.extension.get
-import com.osprey.core.extension.set
+import com.wodox.core.extension.get
+import com.wodox.core.extension.set
 import com.wodox.config.model.Config
 import com.wodox.core.data.model.DatePattern
 import com.wodox.core.data.util.GsonUtils

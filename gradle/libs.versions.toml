@@ -93,6 +93,7 @@ viewbinding = "7.1.0"
 recyclerview = "1.3.2"
 firebaseDatabaseKtx = "22.0.1"
 firebaseFirestoreKtx = "26.0.2"
+hiltCommon = "1.3.0"
 
 [libraries]
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraLifecycle" }
@@ -237,6 +238,7 @@ androidx-viewbinding = { group = "androidx.databinding", name = "viewbinding", v
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hiltCommon" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
